@@ -35,14 +35,19 @@
   <description>Classes to manage report plugin executions with Maven 3.</description>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/shared/trunk/maven-reporting-exec</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/shared/trunk/maven-reporting-exec</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/shared/trunk/maven-reporting-exec</url>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-reporting-exec.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-reporting-exec.git</developerConnection>
+    <url>https://github.com/apache/maven-reporting-exec/tree/${project.scm.tag}</url>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/MSHARED/component/12326449</url>
   </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://builds.apache.org/job/maven-box/job/maven-reporting-exec/</url>
+  </ciManagement>
   <distributionManagement>
     <site>
       <id>apache.website</id>
