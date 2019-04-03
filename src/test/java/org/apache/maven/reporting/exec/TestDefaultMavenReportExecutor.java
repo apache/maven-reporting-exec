@@ -190,16 +190,19 @@ public class TestDefaultMavenReportExecutor
 
         request.setWorkspaceReader( new WorkspaceReader()
         {
+            @Override
             public WorkspaceRepository getRepository()
             {
                 return new WorkspaceRepository();
             }
 
+            @Override
             public File findArtifact( Artifact artifact )
             {
                 return null;
             }
 
+            @Override
             public List<String> findVersions( Artifact artifact )
             {
                 return Collections.emptyList();

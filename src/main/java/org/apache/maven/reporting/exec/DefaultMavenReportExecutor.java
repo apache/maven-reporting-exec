@@ -125,6 +125,7 @@ public class DefaultMavenReportExecutor
     private static final List<String> EXCLUDES = Arrays.asList( "doxia-site-renderer", "doxia-sink-api",
                                                                 "maven-reporting-api" );
 
+    @Override
     public List<MavenReportExecution> buildMavenReports( MavenReportExecutorRequest mavenReportExecutorRequest )
         throws MojoExecutionException
     {
@@ -134,8 +135,8 @@ public class DefaultMavenReportExecutor
         }
         getLog().debug( "DefaultMavenReportExecutor.buildMavenReports()" );
 
-        Set<String> reportPluginKeys = new HashSet<String>();
-        List<MavenReportExecution> reportExecutions = new ArrayList<MavenReportExecution>();
+        Set<String> reportPluginKeys = new HashSet<>();
+        List<MavenReportExecution> reportExecutions = new ArrayList<>();
 
         String pluginKey = "";
         try
@@ -177,11 +178,11 @@ public class DefaultMavenReportExecutor
             mavenPluginManagerHelper.getPluginDescriptor( plugin, mavenReportExecutorRequest.getMavenSession() );
 
         // step 2: prepare the goals
-        List<GoalWithConf> goalsWithConfiguration = new ArrayList<GoalWithConf>();
+        List<GoalWithConf> goalsWithConfiguration = new ArrayList<>();
         boolean hasUserDefinedReports = prepareGoals( reportPlugin, pluginDescriptor, goalsWithConfiguration );
 
         // step 3: prepare the reports
-        List<MavenReportExecution> reports = new ArrayList<MavenReportExecution>();
+        List<MavenReportExecution> reports = new ArrayList<>( goalsWithConfiguration.size() );
         for ( GoalWithConf report : goalsWithConfiguration )
         {
             MavenReportExecution mavenReportExecution =
@@ -230,7 +231,7 @@ public class DefaultMavenReportExecutor
             return false;
         }
 
-        Set<String> goals = new HashSet<String>();
+        Set<String> goals = new HashSet<>();
         for ( String report : reportPlugin.getReports() )
         {
             if ( goals.add( report ) )
