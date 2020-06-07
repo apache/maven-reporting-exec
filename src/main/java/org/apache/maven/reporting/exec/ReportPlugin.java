@@ -31,7 +31,7 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
  * some values are copied.
  * @see org.apache.maven.model.ReportPlugin
  */
-public class ReportPlugin
+class ReportPlugin
 {
     private String groupId = "org.apache.maven.plugins";
 
