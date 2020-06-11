@@ -303,8 +303,8 @@
               </filters>
               <relocations>
                 <relocation>
-                  <pattern>org.codehaus.plexus.util.xml</pattern>
-                  <shadedPattern>org.apache.maven.reporting.exec.xml</shadedPattern>
+                  <pattern>org.codehaus.plexus.util.xml.Xpp3DomUtils</pattern>
+                  <shadedPattern>org.apache.maven.reporting.exec.xml.Xpp3DomUtils</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
