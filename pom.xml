@@ -29,7 +29,7 @@
 
   <groupId>org.apache.maven.reporting</groupId>
   <artifactId>maven-reporting-exec</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.5.1-SNAPSHOT</version>
 
   <name>Apache Maven Reporting Executor</name>
   <description>Classes to manage report plugin executions with Maven 3.</description>
@@ -303,7 +303,7 @@
               </filters>
               <relocations>
                 <relocation>
-                  <pattern>org.codehaus.plexus.xml</pattern>
+                  <pattern>org.codehaus.plexus.util.xml</pattern>
                   <shadedPattern>org.apache.maven.reporting.exec.xml</shadedPattern>
                 </relocation>
               </relocations>
