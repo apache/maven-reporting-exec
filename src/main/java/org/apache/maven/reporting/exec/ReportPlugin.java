@@ -89,7 +89,7 @@ class ReportPlugin
     {
         if ( this.reportSets == null )
         {
-            this.reportSets = new ArrayList<ReportSet>();
+            this.reportSets = new ArrayList<>();
         }
 
         return this.reportSets;

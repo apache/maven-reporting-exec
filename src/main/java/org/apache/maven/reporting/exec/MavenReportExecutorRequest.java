@@ -107,7 +107,7 @@ public class MavenReportExecutorRequest
                 p.setConfiguration( new XmlPlexusConfiguration( (Xpp3Dom) r.getConfiguration() ) );
             }
 
-            List<ReportSet> prs = new ArrayList<ReportSet>();
+            List<ReportSet> prs = new ArrayList<>();
             for ( org.apache.maven.model.ReportSet rs : r.getReportSets() )
             {
                 ReportSet ps = new ReportSet();

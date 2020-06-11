@@ -110,7 +110,7 @@ public class DefaultMavenPluginManagerHelper
             }
         }
 
-        return isEclipseAether.booleanValue();
+        return isEclipseAether;
     }
 
     private Object createExclusionsDependencyFilter( List<String> artifactIdsList )

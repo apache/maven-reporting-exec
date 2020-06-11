@@ -234,7 +234,7 @@ public class TestDefaultMavenReportExecutor
 
         RepositorySystemSession repositorySystemSession = buildRepositorySystemSession( request );
 
-        MavenSession mavenSession = new MavenSession( getContainer(), repositorySystemSession, request, result )
+        return new MavenSession( getContainer(), repositorySystemSession, request, result )
         {
             @Override
             public MavenProject getTopLevelProject()
@@ -261,7 +261,6 @@ public class TestDefaultMavenReportExecutor
             }
 
         };
-        return mavenSession;
     }
 
     private ArtifactRepository getLocalArtifactRepository()
@@ -290,10 +289,8 @@ public class TestDefaultMavenReportExecutor
 
         settingsBuildingRequest.getSystemProperties().putAll( System.getProperties() );
 
-        Settings settings =
-            getContainer().lookup( SettingsBuilder.class ).build( settingsBuildingRequest ).getEffectiveSettings();
-
-        return settings;
+        return getContainer().lookup( SettingsBuilder.class )
+                .build( settingsBuildingRequest ).getEffectiveSettings();
 
     }
 

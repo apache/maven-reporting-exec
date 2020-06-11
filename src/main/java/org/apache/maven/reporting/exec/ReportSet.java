@@ -61,7 +61,7 @@ class ReportSet
     {
         if ( this.reports == null )
         {
-            this.reports = new ArrayList<String>();
+            this.reports = new ArrayList<>();
         }
 
         return this.reports;

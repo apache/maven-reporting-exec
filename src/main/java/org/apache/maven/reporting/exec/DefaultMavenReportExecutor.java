@@ -248,7 +248,7 @@ public class DefaultMavenReportExecutor
 
         for ( ReportSet reportSet : reportPlugin.getReportSets() )
         {
-            goals = new HashSet<String>();
+            goals = new HashSet<>();
             for ( String report : reportSet.getReports() )
             {
                 if ( goals.add( report ) )
@@ -387,7 +387,7 @@ public class DefaultMavenReportExecutor
         }
         catch ( PluginContainerException e )
         {
-            /**
+            /*
              * ignore old plugin which are using removed PluginRegistry [INFO] Caused by:
              * java.lang.NoClassDefFoundError: org/apache/maven/plugin/registry/PluginRegistry
              */
