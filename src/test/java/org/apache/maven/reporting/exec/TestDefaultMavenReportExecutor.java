@@ -19,7 +19,6 @@ package org.apache.maven.reporting.exec;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.RepositoryUtils;
@@ -55,6 +54,7 @@ import org.sonatype.aether.repository.WorkspaceReader;
 import org.sonatype.aether.repository.WorkspaceRepository;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -156,7 +156,7 @@ public class TestDefaultMavenReportExecutor
 
             MavenSession mavenSession = getMavenSession( getLocalArtifactRepository(), mavenProject );
             mavenSession.setCurrentProject( mavenProject );
-            mavenSession.setProjects( Lists.<MavenProject>newArrayList( mavenProject ) );
+            mavenSession.setProjects( Arrays.asList( mavenProject ) );
             mavenReportExecutorRequest.setMavenSession( mavenSession );
 
             ReportPlugin reportPlugin = new ReportPlugin();
@@ -169,7 +169,7 @@ public class TestDefaultMavenReportExecutor
                 reportPlugin.getReportSets().add( reportSet );
             }
 
-            List<ReportPlugin> reportPlugins = Lists.newArrayList( reportPlugin );
+            List<ReportPlugin> reportPlugins = Arrays.asList( reportPlugin );
 
             mavenReportExecutorRequest.setReportPlugins( reportPlugins.toArray( new ReportPlugin[1] ) );
 
@@ -251,7 +251,7 @@ public class TestDefaultMavenReportExecutor
             @Override
             public List<MavenProject> getProjects()
             {
-                return Lists.newArrayList( mavenProject );
+                return Arrays.asList( mavenProject );
             }
 
             @Override
@@ -342,13 +342,13 @@ public class TestDefaultMavenReportExecutor
             @Override
             public List<String> getCompileSourceRoots()
             {
-                return Lists.newArrayList( "src/main/java" );
+                return Arrays.asList( "src/main/java" );
             }
 
             @Override
             public List<String> getTestCompileSourceRoots()
             {
-                return Lists.newArrayList( "src/test/java" );
+                return Arrays.asList( "src/test/java" );
             }
         };
 
