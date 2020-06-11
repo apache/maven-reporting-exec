@@ -29,7 +29,7 @@ import org.apache.maven.reporting.MavenReportException;
 import java.util.Locale;
 
 /**
- * Report that displays effective parameter values: will be used to check how report values
+ * Report that displays effective parameter values: used to check how report values
  * are inherited/overridden from build.pluginManagement and not build.plugins.
  * 
  * @goal test
