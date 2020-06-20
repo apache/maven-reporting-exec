@@ -63,6 +63,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomUtils;
  * <p>
  * <b>Note</b> if no version is defined in the report plugin, the version will be searched with
  * {@link #resolvePluginVersion(ReportPlugin, MavenReportExecutorRequest) resolvePluginVersion(...)} method:
+ * </p>
  * <ol>
  * <li>use the one defined in the reportPlugin configuration,</li>
  * <li>search similar (same groupId and artifactId) plugin in the build/plugins section of the pom,</li>
@@ -70,9 +71,9 @@ import org.codehaus.plexus.util.xml.Xpp3DomUtils;
  * <li>ask {@link PluginVersionResolver} to get a fallback version (display a warning as it's not a recommended use).
  * </li>
  * </ol>
- * </p>
  * <p>
  * Following steps are done:
+ * </p>
  * <ul>
  * <li>get {@link PluginDescriptor} from the {@link MavenPluginManager} (through
  * {@link MavenPluginManagerHelper#getPluginDescriptor(Plugin, org.apache.maven.execution.MavenSession)
@@ -90,7 +91,6 @@ import org.codehaus.plexus.util.xml.Xpp3DomUtils;
  * LifecycleExecutor.calculateForkedExecutions(...)} if any forked execution is needed: if yes, execute the forked
  * execution here</li>
  * </ul>
- * </p>
  * 
  * @author Olivier Lamy
  */
@@ -555,7 +555,7 @@ public class DefaultMavenReportExecutor
      * @param reportPlugin the report plugin to resolve the version
      * @param mavenReportExecutorRequest the current report execution context
      * @return the report plugin version
-     * @throws PluginVersionResolutionException
+     * @throws PluginVersionResolutionException on plugin version resolution issue
      */
     protected String resolvePluginVersion( ReportPlugin reportPlugin,
                                            MavenReportExecutorRequest mavenReportExecutorRequest )

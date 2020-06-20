@@ -36,7 +36,7 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 
 /**
- * 
+ * <p>DefaultMavenPluginManagerHelper class.</p>
  */
 @Component( role = MavenPluginManagerHelper.class )
 public class DefaultMavenPluginManagerHelper
@@ -56,6 +56,9 @@ public class DefaultMavenPluginManagerHelper
 
     private Method getRepositorySession;
 
+    /**
+     * <p>Constructor for DefaultMavenPluginManagerHelper.</p>
+     */
     public DefaultMavenPluginManagerHelper()
     {
         try
@@ -125,6 +128,7 @@ public class DefaultMavenPluginManagerHelper
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
         throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException
@@ -174,6 +178,7 @@ public class DefaultMavenPluginManagerHelper
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setupPluginRealm( PluginDescriptor pluginDescriptor, MavenSession session, ClassLoader parent,
                                   List<String> imports, List<String> excludeArtifactIds )

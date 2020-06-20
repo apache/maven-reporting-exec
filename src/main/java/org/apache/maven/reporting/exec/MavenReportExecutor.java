@@ -39,9 +39,9 @@ public interface MavenReportExecutor
     /**
      * Build the {@link org.apache.maven.reporting.MavenReport}s, with associated forked executions if necessary. 
      * 
-     * @param mavenReportExecutorRequest
+     * @param mavenReportExecutorRequest the request
      * @return a list or prepared Maven report executions
-     * @throws MojoExecutionException
+     * @throws MojoExecutionException on report execution issue
      */
     List<MavenReportExecution> buildMavenReports( MavenReportExecutorRequest mavenReportExecutorRequest )
         throws MojoExecutionException;

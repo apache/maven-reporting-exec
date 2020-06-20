@@ -43,12 +43,12 @@ public interface MavenPluginManagerHelper
      * Helper for {@link org.apache.maven.plugin.MavenPluginManager#getPluginDescriptor
      * MavenPluginManager#getPluginDescriptor(Plugin, List, xxx.aether.RepositorySystemSession)}
      * 
-     * @param plugin
-     * @param session
-     * @return
-     * @throws PluginResolutionException
-     * @throws PluginDescriptorParsingException
-     * @throws InvalidPluginDescriptorException
+     * @param plugin the plugin
+     * @param session the session
+     * @return the plugin descriptor
+     * @throws PluginResolutionException on resolution issue
+     * @throws PluginDescriptorParsingException on descriptor parsing issue
+     * @throws InvalidPluginDescriptorException on invalid descriptor
      */
     PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
         throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException;
@@ -57,13 +57,13 @@ public interface MavenPluginManagerHelper
      * Helper for {@link org.apache.maven.plugin.MavenPluginManager#setupPluginRealm
      * MavenPluginManager#setupPluginRealm(PluginDescriptor, ..., List, xxx.aether.graph.DependencyFilter)}
      * 
-     * @param pluginDescriptor
-     * @param session
-     * @param parent
-     * @param imports
-     * @param excludeArtifactIds
-     * @throws PluginResolutionException
-     * @throws PluginContainerException
+     * @param pluginDescriptor the plugin descriptor
+     * @param session the session
+     * @param parent the parent classloader
+     * @param imports classloader imports
+     * @param excludeArtifactIds artifacts excluded from classloader
+     * @throws PluginResolutionException on resolution issue
+     * @throws PluginContainerException on issue with configuration
      */
     void setupPluginRealm( PluginDescriptor pluginDescriptor, MavenSession session, ClassLoader parent,
                                   List<String> imports, List<String> excludeArtifactIds )
