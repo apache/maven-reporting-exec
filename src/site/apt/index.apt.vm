@@ -32,7 +32,28 @@ ${project.name}
   {{{./apidocs/org/apache/maven/reporting/exec/MavenReportExecutor.html}MavenReportExecutor}}
   ({{{./apidocs/org/apache/maven/reporting/exec/DefaultMavenReportExecutor.html}implementation}}).
 
-  Since 1.4, the request can (and should) be populated from
+  Contrary to Maven 2.x:
+
+  [[1]] report <<<\<version\>>>> explicit definition is optional:\
+  if no version is specified for a report plugin, version is determined by
+
+    [[1]] searching for the plugin in the <<<build/plugins>>> section of the pom,
+ 
+    [[2]] searching for the plugin in the <<<build/pluginManagement>>> section of the pom,
+
+    [[3]] asking {{{/ref/current/maven-core/apidocs/org/apache/maven/plugin/version/PluginVersionResolver.html}PluginVersionResolver}}
+    to get a fallback version and display a warning as it's not a recommended use,
+
+    []
+
+  [[2]] plugin configuration from <<<build/pluginManagement>>> is also injected into reports
+  (since Maven Reporting Executor 1.2, which is {{{/plugins/maven-site-plugin/history.html}used by Maven Site Plugin 3.4}}).
+
+  []
+
+* Notice on now obsolete reportPlugin format
+
+  Since 1.4 (used by Maven Site Plugin 3.7), the request can (and should) be populated from
   {{{/ref/current/maven-model/maven.html#class_reporting}pom's <<<\<reporting\>>>> section}},
   injected in Mojo parameter as <<<$\{project.reporting.plugins\}>>> default value:
 
@@ -41,26 +62,9 @@ ${project.name}
     private org.apache.maven.model.ReportPlugin[] reportingPlugins;
 +----+
 
-  Contrary to Maven 2.x, report <<<\<version\>>>> explicit definition is optional:
-  if no version is specified for a report plugin, version is determined by
-
-    [[1]] searching for the plugin in the <<<build/plugins>>> section of the pom,
- 
-    [[2]] searching for the plugin in the <<<build/pluginManagement>>> section of the pom,
-
-    [[3]] asking {{{/ref/current/maven-core/apidocs/org/apache/maven/plugin/version/PluginVersionResolver.html}PluginVersionResolver}}
-    to get a fallback version and display a warning as it's not a recommended use.
-
-    []
-
-  Since <<<maven-reporting-exec>>> 1.2 (which is used by <<<maven-site-plugin>>> 3.4), plugin configuration in
-  <<<build/pluginManagement>>> is also injected into reports.
-
-* Notice on now obsolete reportPlugin format
-
   This section is kept to explain what happened in previous releases of the component, but this approach has been
   abandonned so far after discovering major limitations: see
-  {{{/plugins/maven-site-plugin/maven-3.html#New_Configuration_Maven_3_only_no_reports_configuration_inheritance}Maven Site Plugin documentation}}
+  {{{/plugins-archives/maven-site-plugin-3.9.0/maven-3.html#New_Configuration_Maven_3_only_no_reports_configuration_inheritance}Maven Site Plugin 3.9.0 documentation}}
   for more details.
 
   Report plugins can be configured in <<<\<configuration\>>>> element of <<<maven-site-plugin>>> or any other
