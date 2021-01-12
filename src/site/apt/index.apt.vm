@@ -46,7 +46,7 @@ ${project.name}
 
     []
 
-  [[2]] plugin configuration from <<<build/pluginManagement>>> is injected into <<<reporting>>> section of the pom
+  [[2]] plugin configuration from <<<build/pluginManagement>>> is injected into <<<reporting/plugins>>>
   (since Maven Reporting Executor 1.2, which is {{{/plugins/maven-site-plugin/history.html}used by Maven Site Plugin 3.4}}).
 
   []
@@ -54,7 +54,7 @@ ${project.name}
 * Notice on now obsolete reportPlugin format
 
   Since 1.4 (used by Maven Site Plugin 3.7), the request can (and should) be populated from
-  {{{/ref/current/maven-model/maven.html#class_reporting}pom's <<<\<reporting\>>>> section}},
+  {{{/ref/current/maven-model/maven.html#class_reporting}pom's <<<\<reporting.plugins\>>>> section}},
   injected in Mojo parameter as <<<$\{project.reporting.plugins\}>>> default value:
 
 +----+
