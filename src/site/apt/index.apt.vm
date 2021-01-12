@@ -46,7 +46,7 @@ ${project.name}
 
     []
 
-  [[2]] plugin configuration from <<<build/pluginManagement>>> is also injected into reports
+  [[2]] plugin configuration from <<<build/pluginManagement>>> is injected into <<<reporting>>> section of the pom
   (since Maven Reporting Executor 1.2, which is {{{/plugins/maven-site-plugin/history.html}used by Maven Site Plugin 3.4}}).
 
   []
