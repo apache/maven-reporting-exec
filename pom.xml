@@ -175,15 +175,15 @@
 
     <dependency>
       <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-connector-basic</artifactId>
+      <version>${aetherVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-transport-http</artifactId>
       <version>${aetherVersion}</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
