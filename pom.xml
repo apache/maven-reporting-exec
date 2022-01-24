@@ -57,6 +57,7 @@
 
   <properties>
     <mavenVersion>3.2.5</mavenVersion>
+    <aetherVersion>1.0.0.v20140518</aetherVersion>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2020-06-16T19:43:55Z</project.build.outputTimestamp>
   </properties>
@@ -119,13 +120,13 @@
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
-      <version>1.0.0.v20140518</version>
+      <version>${aetherVersion}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-util</artifactId>
-      <version>1.0.0.v20140518</version>
+      <version>${aetherVersion}</version>
     </dependency>
 
     <!-- test -->
@@ -170,6 +171,19 @@
       <artifactId>maven-aether-provider</artifactId>
       <version>${mavenVersion}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-transport-http</artifactId>
+      <version>${aetherVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
