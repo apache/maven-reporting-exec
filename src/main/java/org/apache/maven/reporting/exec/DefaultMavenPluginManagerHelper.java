@@ -60,18 +60,10 @@ public class DefaultMavenPluginManagerHelper
     public PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
         throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException
     {
-        try
-        {
-            RepositorySystemSession repositorySystemSession = session.getRepositorySession();
-            List<RemoteRepository> remoteRepositories = session.getCurrentProject().getRemotePluginRepositories();
+        RepositorySystemSession repositorySystemSession = session.getRepositorySession();
+        List<RemoteRepository> remoteRepositories = session.getCurrentProject().getRemotePluginRepositories();
 
-            return mavenPluginManager.getPluginDescriptor( plugin, remoteRepositories, repositorySystemSession );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            logger.warn( "IllegalArgumentException during MavenPluginManager.getPluginDescriptor() call", e );
-            throw e;
-        }
+        return mavenPluginManager.getPluginDescriptor( plugin, remoteRepositories, repositorySystemSession );
     }
 
     /** {@inheritDoc} */
@@ -80,15 +72,7 @@ public class DefaultMavenPluginManagerHelper
                                   List<String> imports, List<String> excludeArtifactIds )
         throws PluginResolutionException, PluginContainerException
     {
-        try
-        {
-            mavenPluginManager.setupPluginRealm(
-                pluginDescriptor, session, parent, imports, createExclusionsDependencyFilter( excludeArtifactIds ) );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            logger.warn( "IllegalArgumentException during MavenPluginManager.setupPluginRealm() call", e );
-            throw e;
-        }
+        mavenPluginManager.setupPluginRealm(
+            pluginDescriptor, session, parent, imports, createExclusionsDependencyFilter( excludeArtifactIds ) );
     }
 }
