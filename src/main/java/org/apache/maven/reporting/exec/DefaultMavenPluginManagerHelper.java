@@ -70,6 +70,7 @@ public class DefaultMavenPluginManagerHelper
         catch ( IllegalArgumentException e )
         {
             logger.warn( "IllegalArgumentException during MavenPluginManager.getPluginDescriptor() call", e );
+            throw e;
         }
 
         return null;
@@ -89,6 +90,7 @@ public class DefaultMavenPluginManagerHelper
         catch ( IllegalArgumentException e )
         {
             logger.warn( "IllegalArgumentException during MavenPluginManager.setupPluginRealm() call", e );
+            throw e;
         }
     }
 }

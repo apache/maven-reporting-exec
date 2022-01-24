@@ -69,8 +69,8 @@ public class TestDefaultMavenReportExecutor
     @Override
     protected void customizeContainerConfiguration( @SuppressWarnings( "unused" ) final ContainerConfiguration configuration )
     {
-        super.customizeContainerConfiguration(configuration);
-        configuration.setAutoWiring(true).setClassPathScanning(PlexusConstants.SCANNING_CACHE);
+        super.customizeContainerConfiguration( configuration );
+        configuration.setAutoWiring( true ).setClassPathScanning( PlexusConstants.SCANNING_CACHE );
     }
 
     MavenExecutionRequest request = null;
