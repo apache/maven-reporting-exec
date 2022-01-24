@@ -72,8 +72,6 @@ public class DefaultMavenPluginManagerHelper
             logger.warn( "IllegalArgumentException during MavenPluginManager.getPluginDescriptor() call", e );
             throw e;
         }
-
-        return null;
     }
 
     /** {@inheritDoc} */
