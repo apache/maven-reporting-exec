@@ -35,7 +35,7 @@ import org.apache.maven.reporting.MavenReport;
  * </ul> 
  * <p>
  *   With this bean, a plugin wanting to generate a report (= <i>"execute"</i> the report) has to call the
- *   {@link MavenReport#generate(org.codehaus.doxia.sink.Sink, java.util.Locale)}
+ *   {@link MavenReport#generate(org.apache.maven.doxia.sink.Sink, java.util.Locale)}
  *   method, setting the current {@link Thread} classLoader first with {@link #classLoader}.
  * </p>
  * <p>
