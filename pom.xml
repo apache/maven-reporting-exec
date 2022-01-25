@@ -213,6 +213,15 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin><!-- shade Xpp3DomUtils that does not require Xpp3Dom.getInputLocation(): see MSHARED-921 -->
         <groupId>org.apache.maven.plugins</groupId>
