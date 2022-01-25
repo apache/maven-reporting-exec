@@ -19,8 +19,6 @@ package org.apache.maven.reporting.exec;
  * under the License.
  */
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.maven.execution.MavenSession;
@@ -34,6 +32,10 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.graph.DependencyFilter;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
 
 /**
  * <p>DefaultMavenPluginManagerHelper class.</p>
@@ -48,84 +50,9 @@ public class DefaultMavenPluginManagerHelper
     @Requirement
     protected MavenPluginManager mavenPluginManager;
 
-    private Boolean isEclipseAether;
-
-    private Method setupPluginRealm;
-
-    private Method getPluginDescriptor;
-
-    private Method getRepositorySession;
-
-    /**
-     * <p>Constructor for DefaultMavenPluginManagerHelper.</p>
-     */
-    public DefaultMavenPluginManagerHelper()
+    private DependencyFilter createExclusionsDependencyFilter( List<String> artifactIdsList )
     {
-        try
-        {
-            for ( Method m : MavenPluginManager.class.getMethods() )
-            {
-                if ( "setupPluginRealm".equals( m.getName() ) )
-                {
-                    setupPluginRealm = m;
-                }
-                else if ( "getPluginDescriptor".equals( m.getName() ) )
-                {
-                    getPluginDescriptor = m;
-                }
-            }
-        }
-        catch ( SecurityException e )
-        {
-            logger.warn( "unable to find MavenPluginManager.setupPluginRealm() method", e );
-        }
-
-        try
-        {
-            for ( Method m : MavenSession.class.getMethods() )
-            {
-                if ( "getRepositorySession".equals( m.getName() ) )
-                {
-                    getRepositorySession = m;
-                    break;
-                }
-            }
-        }
-        catch ( SecurityException e )
-        {
-            logger.warn( "unable to find MavenSession.getRepositorySession() method", e );
-        }
-    }
-
-    private boolean isEclipseAether()
-    {
-        if ( isEclipseAether == null )
-        {
-            try
-            {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                cl.loadClass( "org.sonatype.aether.graph.DependencyFilter" );
-                isEclipseAether = false;
-            }
-            catch ( ClassNotFoundException e )
-            {
-                isEclipseAether = true;
-            }
-        }
-
-        return isEclipseAether;
-    }
-
-    private Object createExclusionsDependencyFilter( List<String> artifactIdsList )
-    {
-        if ( isEclipseAether() )
-        {
-            return new org.eclipse.aether.util.filter.ExclusionsDependencyFilter( artifactIdsList );
-        }
-        else
-        {
-            return new org.sonatype.aether.util.filter.ExclusionsDependencyFilter( artifactIdsList );
-        }
+        return new ExclusionsDependencyFilter( artifactIdsList );
     }
 
     /** {@inheritDoc} */
@@ -133,49 +60,10 @@ public class DefaultMavenPluginManagerHelper
     public PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
         throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException
     {
-        try
-        {
-            Object repositorySession = getRepositorySession.invoke( session );
-            List<?> remoteRepositories = session.getCurrentProject().getRemotePluginRepositories();
+        RepositorySystemSession repositorySystemSession = session.getRepositorySession();
+        List<RemoteRepository> remoteRepositories = session.getCurrentProject().getRemotePluginRepositories();
 
-            return (PluginDescriptor) getPluginDescriptor.invoke( mavenPluginManager, plugin, remoteRepositories,
-                                                                  repositorySession );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            logger.warn( "IllegalArgumentException during MavenPluginManager.getPluginDescriptor() call", e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            logger.warn( "IllegalAccessException during MavenPluginManager.getPluginDescriptor() call", e );
-        }
-        catch ( InvocationTargetException e )
-        {
-            Throwable target = e.getTargetException();
-            if ( target instanceof PluginResolutionException )
-            {
-                throw (PluginResolutionException) target;
-            }
-            if ( target instanceof PluginDescriptorParsingException )
-            {
-                throw (PluginDescriptorParsingException) target;
-            }
-            if ( target instanceof InvalidPluginDescriptorException )
-            {
-                throw (InvalidPluginDescriptorException) target;
-            }
-            if ( target instanceof RuntimeException )
-            {
-                throw (RuntimeException) target;
-            }
-            if ( target instanceof Error )
-            {
-                throw (Error) target;
-            }
-            logger.warn( "Exception during MavenPluginManager.getPluginDescriptor() call", e );
-        }
-
-        return null;
+        return mavenPluginManager.getPluginDescriptor( plugin, remoteRepositories, repositorySystemSession );
     }
 
     /** {@inheritDoc} */
@@ -184,39 +72,7 @@ public class DefaultMavenPluginManagerHelper
                                   List<String> imports, List<String> excludeArtifactIds )
         throws PluginResolutionException, PluginContainerException
     {
-        try
-        {
-            setupPluginRealm.invoke( mavenPluginManager, pluginDescriptor, session, parent, imports,
-                                     createExclusionsDependencyFilter( excludeArtifactIds ) );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            logger.warn( "IllegalArgumentException during MavenPluginManager.setupPluginRealm() call", e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            logger.warn( "IllegalAccessException during MavenPluginManager.setupPluginRealm() call", e );
-        }
-        catch ( InvocationTargetException e )
-        {
-            Throwable target = e.getTargetException();
-            if ( target instanceof PluginResolutionException )
-            {
-                throw (PluginResolutionException) target;
-            }
-            if ( target instanceof PluginContainerException )
-            {
-                throw (PluginContainerException) target;
-            }
-            if ( target instanceof RuntimeException )
-            {
-                throw (RuntimeException) target;
-            }
-            if ( target instanceof Error )
-            {
-                throw (Error) target;
-            }
-            logger.warn( "Exception during MavenPluginManager.setupPluginRealm() call", e );
-        }
+        mavenPluginManager.setupPluginRealm(
+            pluginDescriptor, session, parent, imports, createExclusionsDependencyFilter( excludeArtifactIds ) );
     }
 }
