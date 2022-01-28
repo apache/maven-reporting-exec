@@ -24,6 +24,7 @@ import org.apache.maven.Maven;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.cli.MavenCli;
+import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -279,7 +280,7 @@ public class TestDefaultMavenReportExecutor
             return localArtifactRepository;
         }
         String localRepoPath =
-            System.getProperty( "localRepository", MavenCli.userMavenConfigurationHome.getPath() + "/repository" );
+            System.getProperty( "localRepository", RepositorySystem.userMavenConfigurationHome.getPath() + "/repository" );
 
         localArtifactRepository = lookup( RepositorySystem.class ).createLocalRepository( new File( localRepoPath ) );
         return localArtifactRepository;
@@ -291,9 +292,9 @@ public class TestDefaultMavenReportExecutor
 
         SettingsBuildingRequest settingsBuildingRequest = new DefaultSettingsBuildingRequest();
 
-        settingsBuildingRequest.setGlobalSettingsFile( MavenCli.DEFAULT_GLOBAL_SETTINGS_FILE );
+        settingsBuildingRequest.setGlobalSettingsFile( SettingsXmlConfigurationProcessor.DEFAULT_GLOBAL_SETTINGS_FILE );
 
-        settingsBuildingRequest.setUserSettingsFile( MavenCli.DEFAULT_USER_SETTINGS_FILE );
+        settingsBuildingRequest.setUserSettingsFile( SettingsXmlConfigurationProcessor.DEFAULT_USER_SETTINGS_FILE );
 
         settingsBuildingRequest.getSystemProperties().putAll( System.getProperties() );
 
