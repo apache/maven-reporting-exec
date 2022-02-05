@@ -60,6 +60,8 @@
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2020-06-16T19:43:55Z</project.build.outputTimestamp>
+    <sitePluginVersion>3.10.0</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.2.1</projectInfoReportsPluginVersion>
   </properties>
 
   <dependencies>
