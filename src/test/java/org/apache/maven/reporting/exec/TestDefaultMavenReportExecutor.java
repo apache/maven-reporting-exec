@@ -219,12 +219,6 @@ public class TestDefaultMavenReportExecutor
         } );
         final Settings settings = getSettings();
 
-        Mirror centralMirror = new Mirror();
-        centralMirror.setId("httpsCentral");
-        centralMirror.setMirrorOf( "central" );
-        centralMirror.setUrl( "https://repo.maven.apache.org/maven2" );
-        request.setMirrors( Collections.singletonList( centralMirror ) );
-
         getContainer().lookup( MavenExecutionRequestPopulator.class ).populateFromSettings( request, settings );
 
         getContainer().lookup( MavenExecutionRequestPopulator.class ).populateDefaults( request );
