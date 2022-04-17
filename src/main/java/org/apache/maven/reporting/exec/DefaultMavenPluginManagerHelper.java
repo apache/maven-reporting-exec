@@ -31,7 +31,6 @@ import org.apache.maven.plugin.PluginResolutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.Logger;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -44,9 +43,6 @@ import org.eclipse.aether.util.filter.ExclusionsDependencyFilter;
 public class DefaultMavenPluginManagerHelper
     implements MavenPluginManagerHelper
 {
-    @Requirement
-    private Logger logger;
-
     @Requirement
     protected MavenPluginManager mavenPluginManager;
 
