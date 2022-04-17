@@ -189,6 +189,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Used actually in tests only, but if in test scope the transitive dep will be gone -->
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-classworlds</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-connector-basic</artifactId>
