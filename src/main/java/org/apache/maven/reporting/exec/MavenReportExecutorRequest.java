@@ -29,11 +29,10 @@ import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /**
- * Bean which contains necessary informations to build {@link MavenReportExecution} with {@link MavenReportExecutor}: 
+ * Bean which contains necessary informations to build {@link MavenReportExecution} with {@link MavenReportExecutor}:
  * the intent is to store some informations regarding the current Maven execution.
- * 
+ *
  * @author Olivier Lamy
- * @version $Id$
  */
 public class MavenReportExecutorRequest
 {
