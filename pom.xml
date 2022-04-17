@@ -59,6 +59,7 @@
     <javaVersion>8</javaVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
+    <slf4jVersion>1.7.36</slf4jVersion>
     <project.build.outputTimestamp>2022-02-10T08:20:39Z</project.build.outputTimestamp>
     <sitePluginVersion>3.10.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.2.1</projectInfoReportsPluginVersion>
@@ -118,6 +119,12 @@
       <version>3.1.0</version><!-- do not upgrade to 3.2.0+ because it adds Xpp3Dom.getInputLocation(): see MSHARED-921 -->
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+
     <!-- Eclipse Aether for Maven 3.1+ -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
@@ -153,7 +160,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.32</version>
+      <version>${slf4jVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

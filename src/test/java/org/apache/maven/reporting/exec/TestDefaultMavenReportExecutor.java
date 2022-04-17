@@ -47,7 +47,6 @@ import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.codehaus.plexus.logging.Logger;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -225,9 +224,6 @@ public class TestDefaultMavenReportExecutor
         request.setLocalRepository( getLocalArtifactRepository() );
         request.setLocalRepositoryPath( getLocalArtifactRepository().getBasedir() );
         request.setCacheNotFound( false );
-
-        request.setLoggingLevel( MavenExecutionRequest.LOGGING_LEVEL_INFO );
-        getContainer().lookup( Logger.class ).setThreshold( 1 );
 
         request.setSystemProperties( System.getProperties() );
 

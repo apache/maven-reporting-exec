@@ -50,9 +50,10 @@ import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -98,8 +99,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomUtils;
 public class DefaultMavenReportExecutor
     implements MavenReportExecutor
 {
-    @Requirement
-    private Logger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger( DefaultMavenReportExecutor.class );
 
     @Requirement
     protected MavenPluginManager mavenPluginManager;
@@ -137,7 +137,6 @@ public class DefaultMavenReportExecutor
         {
             return Collections.emptyList();
         }
-        getLog().debug( "DefaultMavenReportExecutor.buildMavenReports()" );
 
         Set<String> reportPluginKeys = new HashSet<>();
         List<MavenReportExecution> reportExecutions = new ArrayList<>();
@@ -151,7 +150,7 @@ public class DefaultMavenReportExecutor
 
                 if ( !reportPluginKeys.add( pluginKey ) )
                 {
-                    logger.info( "plugin " + pluginKey + " will be executed more than one time" );
+                    LOGGER.info( "Plugin {} will be executed more than one time", pluginKey );
                 }
 
                 reportExecutions.addAll( buildReportPlugin( mavenReportExecutorRequest, reportPlugin ) );
@@ -159,7 +158,7 @@ public class DefaultMavenReportExecutor
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException( "failed to get report for " + pluginKey, e );
+            throw new MojoExecutionException( "Failed to get report for " + pluginKey, e );
         }
 
         return reportExecutions;
@@ -174,7 +173,7 @@ public class DefaultMavenReportExecutor
         plugin.setGroupId( reportPlugin.getGroupId() );
         plugin.setArtifactId( reportPlugin.getArtifactId() );
         plugin.setVersion( resolvePluginVersion( reportPlugin, mavenReportExecutorRequest ) );
-        logger.info( "configuring report plugin " + plugin.getId() );
+        LOGGER.info( "Configuring report plugin {}", plugin.getId() );
 
         mergePluginToReportPlugin( mavenReportExecutorRequest, plugin, reportPlugin );
 
@@ -211,9 +210,9 @@ public class DefaultMavenReportExecutor
                 }
                 buff.append( mre.getGoal() );
             }
-            logger.info( reports.size() + " report" + ( reports.size() > 1 ? "s" : "" ) + " "
-                + ( hasUserDefinedReports ? "configured" : "detected" ) + " for " + plugin.getArtifactId() + ":"
-                + plugin.getVersion() + ": " + buff );
+            LOGGER.info( "{} report{} {} for {}:{}: {}", reports.size(), ( reports.size() > 1 ? "s" : "" ),
+                ( hasUserDefinedReports ? "configured" : "detected" ), plugin.getArtifactId(),
+                plugin.getVersion(), buff );
         }
 
         return reports;
@@ -245,7 +244,7 @@ public class DefaultMavenReportExecutor
             }
             else
             {
-                logger.warn( report + " report is declared twice in default reports" );
+                LOGGER.warn( "{} report is declared twice in default reports", report );
             }
         }
 
@@ -261,7 +260,7 @@ public class DefaultMavenReportExecutor
                 }
                 else
                 {
-                    logger.warn( report + " report is declared twice in " + reportSet.getId() + " reportSet" );
+                    LOGGER.warn( "{} report is declared twice in {} reportSet", report, reportSet.getId() );
                 }
             }
         }
@@ -302,8 +301,9 @@ public class DefaultMavenReportExecutor
             if ( hasUserDefinedReports )
             {
                 // reports were explicitly written in the POM
-                logger.warn( "ignoring " + mojoExecution.getPlugin().getId() + ':' + report.getGoal()
-                    + " goal since it is not a report: should be removed from reporting configuration in POM" );
+                LOGGER.warn( "Ignoring {}:{}"
+                    + " goal since it is not a report: should be removed from reporting configuration in POM",
+                    mojoExecution.getPlugin().getId(), report.getGoal() );
             }
             return null;
         }
@@ -354,12 +354,12 @@ public class DefaultMavenReportExecutor
                 execution = "'" + mojoDescriptor.getExecuteGoal() + "' forked goal execution";
             }
 
-            logger.info( "preparing " + reportDescription + " requires " + execution );
+            LOGGER.info( "Preparing {} requires {}", reportDescription, execution );
 
             lifecycleExecutor.executeForkedExecutions( mojoExecution,
                                                        mavenReportExecutorRequest.getMavenSession() );
 
-            logger.info( execution + " for " + reportDescription + " preparation done" );
+            LOGGER.info( "{} for {} preparation done", execution, reportDescription );
         }
 
         return mavenReportExecution;
@@ -385,7 +385,14 @@ public class DefaultMavenReportExecutor
         }
         catch ( ClassCastException e )
         {
-            getLog().warn( "skip ClassCastException " + e.getMessage() );
+            if ( LOGGER.isDebugEnabled() )
+            {
+                LOGGER.warn( "Skipping ClassCastException", e );
+            }
+            else
+            {
+                LOGGER.warn( "Skipping ClassCastException" );
+            }
             return null;
         }
         catch ( PluginContainerException e )
@@ -397,11 +404,13 @@ public class DefaultMavenReportExecutor
             if ( e.getCause() != null && e.getCause() instanceof NoClassDefFoundError
                 && e.getMessage().contains( "PluginRegistry" ) )
             {
-                getLog().warn( "skip NoClassDefFoundError with PluginRegistry " );
-                // too noisy, only in debug mode + e.getMessage() );
-                if ( getLog().isDebugEnabled() )
+                if ( LOGGER.isDebugEnabled() )
                 {
-                    getLog().debug( e.getMessage(), e );
+                    LOGGER.warn( "Skipping NoClassDefFoundError with PluginRegistry", e );
+                }
+                else
+                {
+                    LOGGER.warn( "Skipping NoClassDefFoundError with PluginRegistry" );
                 }
                 return null;
             }
@@ -424,8 +433,14 @@ public class DefaultMavenReportExecutor
         }
         catch ( ClassNotFoundException e )
         {
-            getLog().warn( "skip ClassNotFoundException mojoExecution.goal '" + mojoExecution.getGoal() + "': "
-                               + e.getMessage(), e );
+            if ( LOGGER.isDebugEnabled() )
+            {
+                LOGGER.warn( "Skipping ClassNotFoundException mojoExecution.goal {}", mojoExecution.getGoal(), e );
+            }
+            else
+            {
+                LOGGER.warn( "Skipping ClassNotFoundException mojoExecution.goal {}", mojoExecution.getGoal() );
+            }
             return false;
         }
         finally
@@ -441,17 +456,17 @@ public class DefaultMavenReportExecutor
 
             boolean isMavenReport = MavenReport.class.isAssignableFrom( mojoClass );
 
-            if ( getLog().isDebugEnabled() )
+            if ( LOGGER.isDebugEnabled() )
             {
                 if ( mojoDescriptor != null && mojoDescriptor.getImplementationClass() != null )
                 {
-                    getLog().debug( "class " + mojoDescriptor.getImplementationClass().getName() + " isMavenReport: "
-                                        + isMavenReport );
+                    LOGGER.debug( "Class {} is MavenReport: ",
+                        mojoDescriptor.getImplementationClass().getName(), isMavenReport );
                 }
 
                 if ( !isMavenReport )
                 {
-                    getLog().debug( "skip non MavenReport " + mojoExecution.getMojoDescriptor().getId() );
+                    LOGGER.debug( "Skipping non MavenReport {}", mojoExecution.getMojoDescriptor().getId() );
                 }
             }
 
@@ -459,8 +474,14 @@ public class DefaultMavenReportExecutor
         }
         catch ( LinkageError e )
         {
-            getLog().warn( "skip LinkageError mojoExecution.goal '" + mojoExecution.getGoal() + "': " + e.getMessage(),
-                           e );
+            if ( LOGGER.isDebugEnabled() )
+            {
+                LOGGER.warn( "Skipping LinkageError mojoExecution.goal {}", mojoExecution.getGoal(), e );
+            }
+            else
+            {
+                LOGGER.warn( "Skipping LinkageError mojoExecution.goal {}", mojoExecution.getGoal() );
+            }
             return false;
         }
         finally
@@ -539,11 +560,6 @@ public class DefaultMavenReportExecutor
         return dom;
     }
 
-    private Logger getLog()
-    {
-        return logger;
-    }
-
     /**
      * Resolve report plugin version. Steps to find a plugin version stop after each step if a non <code>null</code>
      * value has been found:
@@ -565,19 +581,13 @@ public class DefaultMavenReportExecutor
         throws PluginVersionResolutionException
     {
         String reportPluginKey = reportPlugin.getGroupId() + ':' + reportPlugin.getArtifactId();
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "resolving version for " + reportPluginKey );
-        }
+        LOGGER.debug( "Resolving version for {}", reportPluginKey );
 
         // look for version defined in the reportPlugin configuration
         if ( reportPlugin.getVersion() != null )
         {
-            if ( getLog().isDebugEnabled() )
-            {
-                logger.debug( "resolved " + reportPluginKey + " version from the reporting.plugins section: "
-                    + reportPlugin.getVersion() );
-            }
+            LOGGER.debug( "Resolved {} version from the reporting.plugins section: {}",
+                reportPluginKey, reportPlugin.getVersion() );
             return reportPlugin.getVersion();
         }
 
@@ -590,11 +600,8 @@ public class DefaultMavenReportExecutor
 
             if ( plugin != null && plugin.getVersion() != null )
             {
-                if ( getLog().isDebugEnabled() )
-                {
-                    logger.debug( "resolved " + reportPluginKey + " version from the build.plugins section: "
-                        + plugin.getVersion() );
-                }
+                LOGGER.debug( "Resolved {} version from the build.plugins section: {}",
+                    reportPluginKey, plugin.getVersion() );
                 return plugin.getVersion();
             }
         }
@@ -606,21 +613,18 @@ public class DefaultMavenReportExecutor
 
             if ( plugin != null && plugin.getVersion() != null )
             {
-                if ( getLog().isDebugEnabled() )
-                {
-                    logger.debug( "resolved " + reportPluginKey
-                        + " version from the build.pluginManagement.plugins section: " + plugin.getVersion() );
-                }
+                LOGGER.debug( "Resolved {} version from the build.pluginManagement.plugins section: {}",
+                    reportPluginKey, plugin.getVersion() );
                 return plugin.getVersion();
             }
         }
 
-        logger.warn( "Report plugin " + reportPluginKey + " has an empty version." );
-        logger.warn( "" );
-        logger.warn( "It is highly recommended to fix these problems"
+        LOGGER.warn( "Report plugin {} has an empty version.", reportPluginKey );
+        LOGGER.warn( "" );
+        LOGGER.warn( "It is highly recommended to fix these problems"
             + " because they threaten the stability of your build." );
-        logger.warn( "" );
-        logger.warn( "For this reason, future Maven versions might no"
+        LOGGER.warn( "" );
+        LOGGER.warn( "For this reason, future Maven versions might no"
             + " longer support building such malformed projects." );
 
         Plugin plugin = new Plugin();
@@ -631,10 +635,7 @@ public class DefaultMavenReportExecutor
             new DefaultPluginVersionRequest( plugin, mavenReportExecutorRequest.getMavenSession() );
 
         PluginVersionResult result = pluginVersionResolver.resolve( pluginVersionRequest );
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "resolved " + reportPluginKey + " version from repository: " + result.getVersion() );
-        }
+        LOGGER.debug( "Resolved {} version from repository: {}", reportPluginKey, result.getVersion() );
         return result.getVersion();
     }
 
