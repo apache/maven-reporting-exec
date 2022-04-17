@@ -56,9 +56,9 @@
   </distributionManagement>
 
   <properties>
+    <javaVersion>8</javaVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
-    <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2022-02-10T08:20:39Z</project.build.outputTimestamp>
     <sitePluginVersion>3.10.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.2.1</projectInfoReportsPluginVersion>
@@ -329,8 +329,6 @@
           <properties>
             <maven.compiler.source>${maven.compiler.source}</maven.compiler.source>
             <maven.compiler.target>${maven.compiler.target}</maven.compiler.target>
-            <!-- e.g. ensure that Java7 picks up TLSv1.2 when connecting with Central -->
-            <https.protocols>${https.protocols}</https.protocols>
           </properties>
         </configuration>
         <executions>
