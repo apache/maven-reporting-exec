@@ -61,8 +61,8 @@
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <project.build.outputTimestamp>2022-04-23T19:22:30Z</project.build.outputTimestamp>
-    <sitePluginVersion>3.12.0</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.2.2</projectInfoReportsPluginVersion>
+    <sitePluginVersion>4.0.0-M2</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.3.0</projectInfoReportsPluginVersion>
   </properties>
 
   <dependencies>
@@ -218,7 +218,6 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.3.5</version>
       <scope>provided</scope>
     </dependency>
 
