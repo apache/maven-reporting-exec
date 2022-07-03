@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.maven.shared</groupId>
     <artifactId>maven-shared-components</artifactId>
-    <version>34</version>
+    <version>36</version>
     <relativePath />
   </parent>
 
@@ -232,24 +232,10 @@
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- TODO remove once Maven parent POM will upgraded - MPOM-280 -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.3.1</version>
-          <configuration>
-            <detectLinks>false</detectLinks>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin><!-- shade Xpp3DomUtils that does not require Xpp3Dom.getInputLocation(): see MSHARED-921 -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version><!-- TODO remove version once parent POM upgraded to 35 -->
         <executions>
           <execution>
             <phase>package</phase>
