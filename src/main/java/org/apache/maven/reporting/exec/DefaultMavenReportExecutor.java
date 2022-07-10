@@ -19,6 +19,10 @@ package org.apache.maven.reporting.exec;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,14 +50,14 @@ import org.apache.maven.plugin.version.PluginVersionResolver;
 import org.apache.maven.plugin.version.PluginVersionResult;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.MavenReport;
-import org.apache.maven.shared.utils.StringUtils;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>
@@ -95,23 +99,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Olivier Lamy
  */
-@Component( role = MavenReportExecutor.class )
+@Singleton
+@Named
 public class DefaultMavenReportExecutor
     implements MavenReportExecutor
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( DefaultMavenReportExecutor.class );
 
-    @Requirement
-    protected MavenPluginManager mavenPluginManager;
+    private final MavenPluginManager mavenPluginManager;
 
-    @Requirement
-    protected MavenPluginManagerHelper mavenPluginManagerHelper;
+    private final MavenPluginManagerHelper mavenPluginManagerHelper;
 
-    @Requirement
-    protected LifecycleExecutor lifecycleExecutor;
+    private final LifecycleExecutor lifecycleExecutor;
 
-    @Requirement
-    protected PluginVersionResolver pluginVersionResolver;
+    private final PluginVersionResolver pluginVersionResolver;
 
     private static final List<String> IMPORTS = Arrays.asList( "org.apache.maven.reporting.MavenReport",
                                                                "org.apache.maven.reporting.MavenMultiPageReport",
@@ -128,6 +129,18 @@ public class DefaultMavenReportExecutor
 
     private static final List<String> EXCLUDES = Arrays.asList( "doxia-site-renderer", "doxia-sink-api",
                                                                 "maven-reporting-api" );
+
+    @Inject
+    public DefaultMavenReportExecutor( MavenPluginManager mavenPluginManager,
+                                       MavenPluginManagerHelper mavenPluginManagerHelper,
+                                       LifecycleExecutor lifecycleExecutor,
+                                       PluginVersionResolver pluginVersionResolver )
+    {
+        this.mavenPluginManager = requireNonNull( mavenPluginManager );
+        this.mavenPluginManagerHelper = requireNonNull( mavenPluginManagerHelper );
+        this.lifecycleExecutor = requireNonNull( lifecycleExecutor );
+        this.pluginVersionResolver = requireNonNull( pluginVersionResolver );
+    }
 
     @Override
     public List<MavenReportExecution> buildMavenReports( MavenReportExecutorRequest mavenReportExecutorRequest )

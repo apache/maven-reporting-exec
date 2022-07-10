@@ -62,7 +62,7 @@
     <slf4jVersion>1.7.36</slf4jVersion>
     <project.build.outputTimestamp>2022-04-23T19:22:30Z</project.build.outputTimestamp>
     <sitePluginVersion>4.0.0-M2</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.3.0</projectInfoReportsPluginVersion>
+    <projectInfoReportsPluginVersion>3.4.0</projectInfoReportsPluginVersion>
   </properties>
 
   <dependencies>
@@ -104,19 +104,9 @@
       <version>${mavenVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <version>3.3.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-component-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.1.0</version><!-- do not upgrade to 3.2.0+ because it adds Xpp3Dom.getInputLocation(): see MSHARED-921 -->
+      <version>3.4.2</version>
     </dependency>
 
     <dependency>
@@ -130,18 +120,27 @@
       <artifactId>slf4j-api</artifactId>
       <version>${slf4jVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
 
-    <!-- Eclipse Aether for Maven 3.1+ -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
       <version>${aetherVersion}</version>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-util</artifactId>
       <version>${aetherVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-classworlds</artifactId>
+      <version>2.6.0</version>
     </dependency>
 
     <!-- test -->
@@ -188,13 +187,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Used actually in tests only, but if in test scope the transitive dep will be gone -->
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-classworlds</artifactId>
-      <version>2.5.2</version>
-    </dependency>
-
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-connector-basic</artifactId>
@@ -225,46 +217,12 @@
 
   <build>
     <plugins>
-      <plugin><!-- shade Xpp3DomUtils that does not require Xpp3Dom.getInputLocation(): see MSHARED-921 -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.codehaus.plexus:plexus-utils</include>
-                </includes>
-              </artifactSet>
-              <filters>
-                <filter>
-                  <artifact>org.codehaus.plexus:plexus-utils</artifact>
-                  <includes>
-                    <include>org/codehaus/plexus/util/xml/Xpp3DomUtils.class</include>
-                  </includes>
-                </filter>
-              </filters>
-              <relocations>
-                <relocation>
-                  <pattern>org.codehaus.plexus.util.xml.Xpp3DomUtils</pattern>
-                  <shadedPattern>org.apache.maven.reporting.exec.xml.Xpp3DomUtils</shadedPattern>
-                </relocation>
-              </relocations>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
             <localRepository>${settings.localRepository}</localRepository>
-            <mavenHome>${env.M2_HOME}</mavenHome>
           </systemPropertyVariables>
           <!--
           <forkMode>none</forkMode>
@@ -272,39 +230,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-metadata</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-metadata</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <id>ensure-no-container-api</id>
-            <configuration>
-              <rules>
-                <bannedDependencies>
-                  <excludes>
-                    <exclude>org.codehaus.plexus:plexus-component-api</exclude>
-                    <exclude>org.codehaus.plexus:plexus-container-default</exclude>
-                  </excludes>
-                  <message>The new containers are not supported. You probably added a dependency that is missing the exclusions.</message>
-                </bannedDependencies>
-              </rules>
-              <fail>true</fail>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
