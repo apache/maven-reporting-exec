@@ -118,13 +118,13 @@ public class DefaultMavenReportExecutor
                                                                "org.apache.maven.reporting.MavenMultiPageReport",
                                                                "org.apache.maven.doxia.siterenderer.Renderer",
                                                                "org.apache.maven.doxia.sink.SinkFactory",
-                                                               // TODO Will be removed with Doxia 2.0.0-M1
+                                                               // TODO Will be removed with Doxia 2.0.0
                                                                "org.codehaus.doxia.sink.Sink",
                                                                "org.apache.maven.doxia.sink.Sink",
                                                                "org.apache.maven.doxia.sink.SinkEventAttributes",
-                                                               // TODO Will be removed with Doxia 2.0.0-M1
+                                                               // TODO Will be removed with Doxia 2.0.0
                                                                "org.apache.maven.doxia.logging.LogEnabled",
-                                                               // TODO Will be removed with Doxia 2.0.0-M1
+                                                               // TODO Will be removed with Doxia 2.0.0
                                                                "org.apache.maven.doxia.logging.Log" );
 
     private static final List<String> EXCLUDES = Arrays.asList( "doxia-site-renderer", "doxia-sink-api",
