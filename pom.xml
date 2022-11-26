@@ -61,8 +61,8 @@
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <project.build.outputTimestamp>2022-07-20T20:05:04Z</project.build.outputTimestamp>
-    <sitePluginVersion>4.0.0-M2</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.4.0</projectInfoReportsPluginVersion>
+    <sitePluginVersion>4.0.0-M3</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.4.1</projectInfoReportsPluginVersion>
   </properties>
 
   <dependencies>
