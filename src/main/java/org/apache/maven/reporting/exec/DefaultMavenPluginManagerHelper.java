@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,40 +44,38 @@ import static java.util.Objects.requireNonNull;
  */
 @Singleton
 @Named
-public class DefaultMavenPluginManagerHelper
-    implements MavenPluginManagerHelper
-{
+public class DefaultMavenPluginManagerHelper implements MavenPluginManagerHelper {
     private final MavenPluginManager mavenPluginManager;
 
     @Inject
-    public DefaultMavenPluginManagerHelper( MavenPluginManager mavenPluginManager )
-    {
-        this.mavenPluginManager = requireNonNull( mavenPluginManager );
+    public DefaultMavenPluginManagerHelper(MavenPluginManager mavenPluginManager) {
+        this.mavenPluginManager = requireNonNull(mavenPluginManager);
     }
 
-    private DependencyFilter createExclusionsDependencyFilter( List<String> artifactIdsList )
-    {
-        return new ExclusionsDependencyFilter( artifactIdsList );
+    private DependencyFilter createExclusionsDependencyFilter(List<String> artifactIdsList) {
+        return new ExclusionsDependencyFilter(artifactIdsList);
     }
 
     /** {@inheritDoc} */
     @Override
-    public PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
-        throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException
-    {
+    public PluginDescriptor getPluginDescriptor(Plugin plugin, MavenSession session)
+            throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException {
         RepositorySystemSession repositorySystemSession = session.getRepositorySession();
         List<RemoteRepository> remoteRepositories = session.getCurrentProject().getRemotePluginRepositories();
 
-        return mavenPluginManager.getPluginDescriptor( plugin, remoteRepositories, repositorySystemSession );
+        return mavenPluginManager.getPluginDescriptor(plugin, remoteRepositories, repositorySystemSession);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setupPluginRealm( PluginDescriptor pluginDescriptor, MavenSession session, ClassLoader parent,
-                                  List<String> imports, List<String> excludeArtifactIds )
-        throws PluginResolutionException, PluginContainerException
-    {
+    public void setupPluginRealm(
+            PluginDescriptor pluginDescriptor,
+            MavenSession session,
+            ClassLoader parent,
+            List<String> imports,
+            List<String> excludeArtifactIds)
+            throws PluginResolutionException, PluginContainerException {
         mavenPluginManager.setupPluginRealm(
-            pluginDescriptor, session, parent, imports, createExclusionsDependencyFilter( excludeArtifactIds ) );
+                pluginDescriptor, session, parent, imports, createExclusionsDependencyFilter(excludeArtifactIds));
     }
 }

@@ -1,5 +1,3 @@
-package org.codehaus.doxia.sink;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,14 +16,13 @@ package org.codehaus.doxia.sink;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.codehaus.doxia.sink;
 
 /**
  * Generic document processing interface.
  *
  * @deprecated use {@link org.apache.maven.doxia.sink.Sink} instead (since 1.0-alpha-6).
  */
-public interface Sink
-    extends org.apache.maven.doxia.sink.Sink
-{
+public interface Sink extends org.apache.maven.doxia.sink.Sink {
     // nop
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +27,7 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
  * Represents a set of reports and a configuration to be used to generate them.
  * @see org.apache.maven.model.ReportSet
  */
-class ReportSet
-{
+class ReportSet {
 
     private String id = "default";
 
@@ -37,45 +35,36 @@ class ReportSet
 
     private List<String> reports;
 
-    public String getId()
-    {
+    public String getId() {
         return this.id;
     }
 
-    public void setId( String id )
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public PlexusConfiguration getConfiguration()
-    {
+    public PlexusConfiguration getConfiguration() {
         return this.configuration;
     }
 
-    public void setConfiguration( PlexusConfiguration configuration )
-    {
+    public void setConfiguration(PlexusConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    public List<String> getReports()
-    {
-        if ( this.reports == null )
-        {
+    public List<String> getReports() {
+        if (this.reports == null) {
             this.reports = new ArrayList<>();
         }
 
         return this.reports;
     }
 
-    public void setReports( List<String> reports )
-    {
+    public void setReports(List<String> reports) {
         this.reports = reports;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ReportSet{id='" + getId() + "', reports=" + reports + "}";
     }
-
 }

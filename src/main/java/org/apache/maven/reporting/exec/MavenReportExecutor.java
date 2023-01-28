@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import java.util.List;
 
@@ -34,15 +33,14 @@ import org.apache.maven.plugin.MojoExecutionException;
  *
  * @author Olivier Lamy
  */
-public interface MavenReportExecutor
-{
+public interface MavenReportExecutor {
     /**
-     * Build the {@link org.apache.maven.reporting.MavenReport}s, with associated forked executions if necessary. 
-     * 
+     * Build the {@link org.apache.maven.reporting.MavenReport}s, with associated forked executions if necessary.
+     *
      * @param mavenReportExecutorRequest the request
      * @return a list or prepared Maven report executions
      * @throws MojoExecutionException on report execution issue
      */
-    List<MavenReportExecution> buildMavenReports( MavenReportExecutorRequest mavenReportExecutorRequest )
-        throws MojoExecutionException;
+    List<MavenReportExecution> buildMavenReports(MavenReportExecutorRequest mavenReportExecutorRequest)
+            throws MojoExecutionException;
 }

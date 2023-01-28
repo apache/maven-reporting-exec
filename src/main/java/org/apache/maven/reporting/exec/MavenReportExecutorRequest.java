@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +33,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  *
  * @author Olivier Lamy
  */
-public class MavenReportExecutorRequest
-{
+public class MavenReportExecutorRequest {
     private ArtifactRepository localRepository;
 
     private MavenSession mavenSession;
@@ -44,43 +42,35 @@ public class MavenReportExecutorRequest
 
     private ReportPlugin[] reportPlugins;
 
-    public ArtifactRepository getLocalRepository()
-    {
+    public ArtifactRepository getLocalRepository() {
         return localRepository;
     }
 
-    public void setLocalRepository( ArtifactRepository localRepository )
-    {
+    public void setLocalRepository(ArtifactRepository localRepository) {
         this.localRepository = localRepository;
     }
 
-    public MavenSession getMavenSession()
-    {
+    public MavenSession getMavenSession() {
         return mavenSession;
     }
 
-    public void setMavenSession( MavenSession mavenSession )
-    {
+    public void setMavenSession(MavenSession mavenSession) {
         this.mavenSession = mavenSession;
     }
 
-    public MavenProject getProject()
-    {
+    public MavenProject getProject() {
         return project;
     }
 
-    public void setProject( MavenProject project )
-    {
+    public void setProject(MavenProject project) {
         this.project = project;
     }
 
-    public ReportPlugin[] getReportPlugins()
-    {
+    public ReportPlugin[] getReportPlugins() {
         return reportPlugins;
     }
 
-    public void setReportPlugins( ReportPlugin[] reportPlugins )
-    {
+    public void setReportPlugins(ReportPlugin[] reportPlugins) {
         this.reportPlugins = reportPlugins;
     }
 
@@ -90,35 +80,30 @@ public class MavenReportExecutorRequest
      * @param reportPlugins the report plugins from <code>&lt;reporting&gt;</code> section
      * @since 1.4
      */
-    public void setReportPlugins( org.apache.maven.model.ReportPlugin[] reportPlugins )
-    {
-        setReportPlugins( new ReportPlugin[reportPlugins.length] );
+    public void setReportPlugins(org.apache.maven.model.ReportPlugin[] reportPlugins) {
+        setReportPlugins(new ReportPlugin[reportPlugins.length]);
 
         int i = 0;
-        for ( org.apache.maven.model.ReportPlugin r : reportPlugins )
-        {
+        for (org.apache.maven.model.ReportPlugin r : reportPlugins) {
             ReportPlugin p = new ReportPlugin();
-            p.setGroupId( r.getGroupId() );
-            p.setArtifactId( r.getArtifactId() );
-            p.setVersion( r.getVersion() );
-            if ( r.getConfiguration() != null )
-            {
-                p.setConfiguration( new XmlPlexusConfiguration( (Xpp3Dom) r.getConfiguration() ) );
+            p.setGroupId(r.getGroupId());
+            p.setArtifactId(r.getArtifactId());
+            p.setVersion(r.getVersion());
+            if (r.getConfiguration() != null) {
+                p.setConfiguration(new XmlPlexusConfiguration((Xpp3Dom) r.getConfiguration()));
             }
 
             List<ReportSet> prs = new ArrayList<>();
-            for ( org.apache.maven.model.ReportSet rs : r.getReportSets() )
-            {
+            for (org.apache.maven.model.ReportSet rs : r.getReportSets()) {
                 ReportSet ps = new ReportSet();
-                ps.setId( rs.getId() );
-                ps.setReports( rs.getReports() );
-                if ( rs.getConfiguration() != null )
-                {
-                    ps.setConfiguration( new XmlPlexusConfiguration( (Xpp3Dom) rs.getConfiguration() ) );
+                ps.setId(rs.getId());
+                ps.setReports(rs.getReports());
+                if (rs.getConfiguration() != null) {
+                    ps.setConfiguration(new XmlPlexusConfiguration((Xpp3Dom) rs.getConfiguration()));
                 }
-                prs.add( ps );
+                prs.add(ps);
             }
-            p.setReportSets( prs );
+            p.setReportSets(prs);
 
             this.reportPlugins[i++] = p;
         }

@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import java.util.List;
 
@@ -33,16 +32,15 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor;
  * {@link org.apache.maven.plugin.MavenPluginManager} helper to deal with API changes between Maven 3.0.x and 3.1.x, ie
  * switch from Sonatype Aether (in <code>org.sonatype.aether</code> package) to Eclipse Aether (in
  * <code>org.eclipse.aether</code> package) for some parameters.
- * 
+ *
  * @author Hervé Boutemy
  * @since 1.1
  */
-public interface MavenPluginManagerHelper
-{
+public interface MavenPluginManagerHelper {
     /**
      * Helper for {@link org.apache.maven.plugin.MavenPluginManager#getPluginDescriptor
      * MavenPluginManager#getPluginDescriptor(Plugin, List, xxx.aether.RepositorySystemSession)}
-     * 
+     *
      * @param plugin the plugin
      * @param session the session
      * @return the plugin descriptor
@@ -50,13 +48,13 @@ public interface MavenPluginManagerHelper
      * @throws PluginDescriptorParsingException on descriptor parsing issue
      * @throws InvalidPluginDescriptorException on invalid descriptor
      */
-    PluginDescriptor getPluginDescriptor( Plugin plugin, MavenSession session )
-        throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException;
+    PluginDescriptor getPluginDescriptor(Plugin plugin, MavenSession session)
+            throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException;
 
     /**
      * Helper for {@link org.apache.maven.plugin.MavenPluginManager#setupPluginRealm
      * MavenPluginManager#setupPluginRealm(PluginDescriptor, ..., List, xxx.aether.graph.DependencyFilter)}
-     * 
+     *
      * @param pluginDescriptor the plugin descriptor
      * @param session the session
      * @param parent the parent classloader
@@ -65,7 +63,11 @@ public interface MavenPluginManagerHelper
      * @throws PluginResolutionException on resolution issue
      * @throws PluginContainerException on issue with configuration
      */
-    void setupPluginRealm( PluginDescriptor pluginDescriptor, MavenSession session, ClassLoader parent,
-                                  List<String> imports, List<String> excludeArtifactIds )
-        throws PluginResolutionException, PluginContainerException;
+    void setupPluginRealm(
+            PluginDescriptor pluginDescriptor,
+            MavenSession session,
+            ClassLoader parent,
+            List<String> imports,
+            List<String> excludeArtifactIds)
+            throws PluginResolutionException, PluginContainerException;
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.reporting.exec;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.reporting.exec;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.reporting.exec;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,8 +30,7 @@ import org.codehaus.plexus.configuration.PlexusConfiguration;
  * some values are copied.
  * @see org.apache.maven.model.ReportPlugin
  */
-class ReportPlugin
-{
+class ReportPlugin {
     private String groupId = "org.apache.maven.plugins";
 
     private String artifactId;
@@ -42,78 +40,64 @@ class ReportPlugin
     private PlexusConfiguration configuration;
 
     private List<ReportSet> reportSets;
-    
+
     private List<String> reports;
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return this.groupId;
     }
 
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return this.artifactId;
     }
 
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return this.version;
     }
 
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public PlexusConfiguration getConfiguration()
-    {
+    public PlexusConfiguration getConfiguration() {
         return this.configuration;
     }
 
-    public void setConfiguration( PlexusConfiguration configuration )
-    {
+    public void setConfiguration(PlexusConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    public List<ReportSet> getReportSets()
-    {
-        if ( this.reportSets == null )
-        {
+    public List<ReportSet> getReportSets() {
+        if (this.reportSets == null) {
             this.reportSets = new ArrayList<>();
         }
 
         return this.reportSets;
     }
 
-    public void setReportSets( List<ReportSet> reportSets )
-    {
+    public void setReportSets(List<ReportSet> reportSets) {
         this.reportSets = reportSets;
     }
 
-    public List<String> getReports()
-    {
+    public List<String> getReports() {
         return reports == null ? Collections.<String>emptyList() : reports;
     }
 
-    public void setReports( List<String> reports )
-    {
+    public void setReports(List<String> reports) {
         this.reports = reports;
     }
 
     @Override
-    public String toString()
-    {
-        return "ReportPlugin(" + artifactId + "){version='" + version + "', reports=" + reports
-            + ", reportSets=" + reportSets + "}";
+    public String toString() {
+        return "ReportPlugin(" + artifactId + "){version='" + version + "', reports=" + reports + ", reportSets="
+                + reportSets + "}";
     }
 }
