@@ -372,22 +372,6 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                 LOGGER.warn("Skipping ClassCastException");
             }
             return null;
-        } catch (PluginContainerException e) {
-            /*
-             * ignore old plugin which are using removed PluginRegistry [INFO] Caused by:
-             * java.lang.NoClassDefFoundError: org/apache/maven/plugin/registry/PluginRegistry
-             */
-            if (e.getCause() != null
-                    && e.getCause() instanceof NoClassDefFoundError
-                    && e.getMessage().contains("PluginRegistry")) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.warn("Skipping NoClassDefFoundError with PluginRegistry", e);
-                } else {
-                    LOGGER.warn("Skipping NoClassDefFoundError with PluginRegistry");
-                }
-                return null;
-            }
-            throw e;
         }
     }
 
