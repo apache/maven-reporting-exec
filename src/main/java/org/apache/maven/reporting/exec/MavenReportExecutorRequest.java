@@ -34,6 +34,8 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  * @author Olivier Lamy
  */
 public class MavenReportExecutorRequest {
+
+    @Deprecated
     private ArtifactRepository localRepository;
 
     private MavenSession mavenSession;
@@ -42,10 +44,12 @@ public class MavenReportExecutorRequest {
 
     private ReportPlugin[] reportPlugins;
 
+    @Deprecated
     public ArtifactRepository getLocalRepository() {
         return localRepository;
     }
 
+    @Deprecated
     public void setLocalRepository(ArtifactRepository localRepository) {
         this.localRepository = localRepository;
     }
