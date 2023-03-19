@@ -61,7 +61,8 @@ public class DefaultMavenPluginManagerHelper implements MavenPluginManagerHelper
     public PluginDescriptor getPluginDescriptor(Plugin plugin, MavenSession session)
             throws PluginResolutionException, PluginDescriptorParsingException, InvalidPluginDescriptorException {
         RepositorySystemSession repositorySystemSession = session.getRepositorySession();
-        List<RemoteRepository> remotePluginRepositories = session.getCurrentProject().getRemotePluginRepositories();
+        List<RemoteRepository> remotePluginRepositories =
+                session.getCurrentProject().getRemotePluginRepositories();
 
         return mavenPluginManager.getPluginDescriptor(plugin, remotePluginRepositories, repositorySystemSession);
     }
