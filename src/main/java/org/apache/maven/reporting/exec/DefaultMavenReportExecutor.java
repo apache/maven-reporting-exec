@@ -114,9 +114,11 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
     private static final List<String> IMPORTS = Arrays.asList(
             "org.apache.maven.reporting.MavenReport",
             "org.apache.maven.reporting.MavenMultiPageReport",
+            // TODO Will be removed after Doxia 2.0.0
             "org.apache.maven.doxia.siterenderer.Renderer",
+            "org.apache.maven.doxia.siterenderer.SiteRenderer",
             "org.apache.maven.doxia.sink.SinkFactory",
-            // TODO Will be removed with Doxia 2.0.0
+            // TODO Will be removed after Doxia 2.0.0
             "org.codehaus.doxia.sink.Sink",
             "org.apache.maven.doxia.sink.Sink",
             "org.apache.maven.doxia.sink.SinkEventAttributes",
