@@ -277,7 +277,8 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             return null;
         }
 
-        MojoExecution mojoExecution = new MojoExecution(pluginDescriptor.getPlugin(), report.getGoal(), null);
+        MojoExecution mojoExecution = new MojoExecution(
+                pluginDescriptor.getPlugin(), report.getGoal(), mavenReportExecutorRequest.getExecutionId());
 
         mojoExecution.setMojoDescriptor(mojoDescriptor);
 

@@ -40,6 +40,8 @@ public class MavenReportExecutorRequest {
 
     private MavenSession mavenSession;
 
+    private String executionId;
+
     private MavenProject project;
 
     private ReportPlugin[] reportPlugins;
@@ -60,6 +62,14 @@ public class MavenReportExecutorRequest {
 
     public void setMavenSession(MavenSession mavenSession) {
         this.mavenSession = mavenSession;
+    }
+
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
 
     public MavenProject getProject() {
