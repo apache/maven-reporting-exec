@@ -210,12 +210,11 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                 buff.append(mre.getGoal());
             }
             LOGGER.info(
-                    "{} report{} {} for {}:{}: {}",
+                    "{} {} report{} for {}: {}",
+                    (hasUserDefinedReports ? "Configured" : "Detected"),
                     reports.size(),
                     (reports.size() > 1 ? "s" : ""),
-                    (hasUserDefinedReports ? "configured" : "detected"),
-                    plugin.getArtifactId(),
-                    plugin.getVersion(),
+                    plugin.getId(),
                     buff);
         }
 
@@ -325,7 +324,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         lifecycleExecutor.calculateForkedExecutions(mojoExecution, mavenReportExecutorRequest.getMavenSession());
 
         if (!mojoExecution.getForkedExecutions().isEmpty()) {
-            String reportDescription = pluginDescriptor.getArtifactId() + ":" + report.getGoal() + " report";
+            String reportDescription = pluginDescriptor.getPlugin().getId() + ":" + report.getGoal() + " report";
 
             String execution;
             if (StringUtils.isNotEmpty(mojoDescriptor.getExecutePhase())) {
