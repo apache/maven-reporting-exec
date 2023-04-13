@@ -177,7 +177,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         plugin.setGroupId(reportPlugin.getGroupId());
         plugin.setArtifactId(reportPlugin.getArtifactId());
         plugin.setVersion(resolvePluginVersion(reportPlugin, mavenReportExecutorRequest));
-        LOGGER.info("Configuring report plugin {}", plugin.getId());
+        LOGGER.info("Configuring report plugin {}:{}", plugin.getArtifactId(), plugin.getVersion());
 
         mergePluginToReportPlugin(mavenReportExecutorRequest, plugin, reportPlugin);
 
@@ -210,10 +210,10 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                 buff.append(mre.getGoal());
             }
             LOGGER.info(
-                    "{} report{} {} for {}:{}: {}",
+                    "{} {} report{} for {}:{}: {}",
+                    (hasUserDefinedReports ? "Configured" : "Detected"),
                     reports.size(),
                     (reports.size() > 1 ? "s" : ""),
-                    (hasUserDefinedReports ? "configured" : "detected"),
                     plugin.getArtifactId(),
                     plugin.getVersion(),
                     buff);
