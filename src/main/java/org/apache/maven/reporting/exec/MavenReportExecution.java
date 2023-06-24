@@ -20,6 +20,7 @@ package org.apache.maven.reporting.exec;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.reporting.MavenReport;
+import org.apache.maven.reporting.MavenReportException;
 
 /**
  * <p>
@@ -70,8 +71,9 @@ public class MavenReportExecution {
     /**
      * execute Maven Report's <code>canGenerate()</code> with adequate classloader.
      * @return Maven Report's <code>canGenerate()</code> result
+     * @throws MavenReportException if any
      */
-    public boolean canGenerateReport() {
+    public boolean canGenerateReport() throws MavenReportException {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             if (classLoader != null) {
