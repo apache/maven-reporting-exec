@@ -217,6 +217,10 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                     plugin.getArtifactId(),
                     plugin.getVersion(),
                     buff);
+        } else if (!hasUserDefinedReports) {
+            LOGGER.warn("Ignoring report plugin {}:{},"
+                    + " it does not contain any report goals: should be removed from reporting configuration in POM",
+                    plugin.getArtifactId(), plugin.getVersion());
         }
 
         return reports;
@@ -225,7 +229,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
     private boolean prepareGoals(
             ReportPlugin reportPlugin, PluginDescriptor pluginDescriptor, List<GoalWithConf> goalsWithConfiguration) {
         if (reportPlugin.getReportSets().isEmpty() && reportPlugin.getReports().isEmpty()) {
-            // by default, use every goal, which will be filtered later to only keep reporting goals
+            // by default, use every goal which will be filtered later to only keep reporting goals
             List<MojoDescriptor> mojoDescriptors = pluginDescriptor.getMojos();
             for (MojoDescriptor mojoDescriptor : mojoDescriptors) {
                 goalsWithConfiguration.add(new GoalWithConf(
@@ -292,11 +296,12 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         if (!isMavenReport(mojoExecution, pluginDescriptor)) {
             if (hasUserDefinedReports) {
                 // reports were explicitly written in the POM
-                LOGGER.warn(
-                        "Ignoring {}:{}"
+                LOGGER.warn("Ignoring {}:{}"
                                 + " goal since it is not a report: should be removed from reporting configuration in POM",
-                        mojoExecution.getPlugin().getId(),
-                        report.getGoal());
+                                mojoExecution.getPlugin().getId(), report.getGoal());
+            } else {
+                LOGGER.debug("Ignoring {}:{} goal since it is not a report",
+                        mojoExecution.getPlugin().getId(), report.getGoal());
             }
             return null;
         }
@@ -411,15 +416,14 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
             if (LOGGER.isDebugEnabled()) {
                 if (mojoDescriptor != null && mojoDescriptor.getImplementationClass() != null) {
-                    LOGGER.debug(
-                            "Class {} is MavenReport: ",
+                    LOGGER.debug("Class {} is {}a MavenReport",
                             mojoDescriptor.getImplementationClass().getName(),
-                            isMavenReport);
+                            isMavenReport ? "" : "NOT ");
                 }
 
                 if (!isMavenReport) {
                     LOGGER.debug(
-                            "Skipping non MavenReport {}",
+                            "Skipping non-MavenReport {}",
                             mojoExecution.getMojoDescriptor().getId());
                 }
             }
