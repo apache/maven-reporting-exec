@@ -42,7 +42,7 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-impl</artifactId>
-      <version>4.0.0-M10</version>
+      <version>4.0.0-M11</version>
     </dependency>
   </dependencies>
 
