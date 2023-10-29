@@ -265,7 +265,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
     }
 
     private MavenReportExecution prepareReportExecution(
-            MavenReportExecutorRequest mavenReportExecutorRequest, GoalWithConf report, boolean hasUserDefinedReports)
+            MavenReportExecutorRequest mavenReportExecutorRequest, GoalWithConf report, boolean userDefined)
             throws Exception {
         ReportPlugin reportPlugin = report.getReportPlugin();
         PluginDescriptor pluginDescriptor = report.getPluginDescriptor();
@@ -276,7 +276,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         }
 
         MavenProject project = mavenReportExecutorRequest.getProject();
-        if (!hasUserDefinedReports && mojoDescriptor.isAggregator() && !canAggregate(project)) {
+        if (!userDefined && mojoDescriptor.isAggregator() && !canAggregate(project)) {
             // aggregator mojos automatically added from plugin are only run at execution root
             return null;
         }
@@ -294,7 +294,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                 EXCLUDES);
 
         if (!isMavenReport(mojoExecution, pluginDescriptor)) {
-            if (hasUserDefinedReports) {
+            if (userDefined) {
                 // reports were explicitly written in the POM
                 LOGGER.warn("Ignoring {}:{}"
                                 + " goal since it is not a report: should be removed from reporting configuration in POM",
@@ -326,7 +326,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         MavenReport mavenReport = getConfiguredMavenReport(mojoExecution, pluginDescriptor, mavenReportExecutorRequest);
 
         MavenReportExecution mavenReportExecution = new MavenReportExecution(
-                report.getGoal(), mojoExecution.getPlugin(), mavenReport, pluginDescriptor.getClassRealm());
+                report.getGoal(), mojoExecution.getPlugin(), mavenReport, pluginDescriptor.getClassRealm(), userDefined);
 
         lifecycleExecutor.calculateForkedExecutions(mojoExecution, mavenReportExecutorRequest.getMavenSession());
 

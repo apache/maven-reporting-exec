@@ -45,27 +45,30 @@ import org.apache.maven.reporting.MavenReportException;
  * @author Olivier Lamy
  */
 public class MavenReportExecution {
+    private final String goal;
+
+    private Plugin plugin;
+
     private MavenReport mavenReport;
 
     private ClassLoader classLoader;
 
-    private Plugin plugin;
+    private boolean userDefined;
 
-    private final String goal;
-
-    public MavenReportExecution(String goal, Plugin plugin, MavenReport mavenReport, ClassLoader classLoader) {
+    public MavenReportExecution(String goal, Plugin plugin, MavenReport mavenReport, ClassLoader classLoader, boolean userDefined) {
         this.goal = goal;
         this.setPlugin(plugin);
         this.mavenReport = mavenReport;
         this.classLoader = classLoader;
+        this.userDefined = userDefined;
     }
 
-    public MavenReportExecution(Plugin plugin, MavenReport mavenReport, ClassLoader classLoader) {
-        this(null, plugin, mavenReport, classLoader);
+    public MavenReportExecution(Plugin plugin, MavenReport mavenReport, ClassLoader classLoader, boolean userDefined) {
+        this(null, plugin, mavenReport, classLoader, userDefined);
     }
 
     public MavenReportExecution(MavenReport mavenReport) {
-        this(null, null, mavenReport, null);
+        this(null, null, mavenReport, null, false);
     }
 
     /**
@@ -114,5 +117,13 @@ public class MavenReportExecution {
 
     public String getGoal() {
         return goal;
+    }
+
+    public boolean isUserDefined() {
+        return userDefined;
+    }
+
+    public void setUserDefined(boolean userDefined) {
+        this.userDefined = userDefined;
     }
 }
