@@ -55,7 +55,8 @@ public class MavenReportExecution {
 
     private boolean userDefined;
 
-    public MavenReportExecution(String goal, Plugin plugin, MavenReport mavenReport, ClassLoader classLoader, boolean userDefined) {
+    public MavenReportExecution(
+            String goal, Plugin plugin, MavenReport mavenReport, ClassLoader classLoader, boolean userDefined) {
         this.goal = goal;
         this.setPlugin(plugin);
         this.mavenReport = mavenReport;

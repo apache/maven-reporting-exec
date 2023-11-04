@@ -218,9 +218,11 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                     plugin.getVersion(),
                     buff);
         } else if (!hasUserDefinedReports) {
-            LOGGER.warn("Ignoring report plugin {}:{},"
-                    + " it does not contain any report goals: should be removed from reporting configuration in POM",
-                    plugin.getArtifactId(), plugin.getVersion());
+            LOGGER.warn(
+                    "Ignoring report plugin {}:{},"
+                            + " it does not contain any report goals: should be removed from reporting configuration in POM",
+                    plugin.getArtifactId(),
+                    plugin.getVersion());
         }
 
         return reports;
@@ -296,12 +298,16 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         if (!isMavenReport(mojoExecution, pluginDescriptor)) {
             if (userDefined) {
                 // reports were explicitly written in the POM
-                LOGGER.warn("Ignoring {}:{}"
+                LOGGER.warn(
+                        "Ignoring {}:{}"
                                 + " goal since it is not a report: should be removed from reporting configuration in POM",
-                                mojoExecution.getPlugin().getId(), report.getGoal());
+                        mojoExecution.getPlugin().getId(),
+                        report.getGoal());
             } else {
-                LOGGER.debug("Ignoring {}:{} goal since it is not a report",
-                        mojoExecution.getPlugin().getId(), report.getGoal());
+                LOGGER.debug(
+                        "Ignoring {}:{} goal since it is not a report",
+                        mojoExecution.getPlugin().getId(),
+                        report.getGoal());
             }
             return null;
         }
@@ -326,7 +332,11 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         MavenReport mavenReport = getConfiguredMavenReport(mojoExecution, pluginDescriptor, mavenReportExecutorRequest);
 
         MavenReportExecution mavenReportExecution = new MavenReportExecution(
-                report.getGoal(), mojoExecution.getPlugin(), mavenReport, pluginDescriptor.getClassRealm(), userDefined);
+                report.getGoal(),
+                mojoExecution.getPlugin(),
+                mavenReport,
+                pluginDescriptor.getClassRealm(),
+                userDefined);
 
         lifecycleExecutor.calculateForkedExecutions(mojoExecution, mavenReportExecutorRequest.getMavenSession());
 
@@ -416,7 +426,8 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
             if (LOGGER.isDebugEnabled()) {
                 if (mojoDescriptor != null && mojoDescriptor.getImplementationClass() != null) {
-                    LOGGER.debug("Class {} is {}a MavenReport",
+                    LOGGER.debug(
+                            "Class {} is {}a MavenReport",
                             mojoDescriptor.getImplementationClass().getName(),
                             isMavenReport ? "" : "NOT ");
                 }
