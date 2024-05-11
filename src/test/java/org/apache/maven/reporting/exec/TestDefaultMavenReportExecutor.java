@@ -19,6 +19,7 @@
 package org.apache.maven.reporting.exec;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,11 @@ import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.cli.MavenCli;
+import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -40,7 +45,6 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
 import org.apache.maven.settings.building.SettingsBuilder;
@@ -150,11 +154,11 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
         try {
             MavenReportExecutorRequest mavenReportExecutorRequest = new MavenReportExecutorRequest();
 
-            mavenReportExecutorRequest.setLocalRepository(getLocalArtifactRepository());
+            mavenReportExecutorRequest.setLocalRepository(getLocalRepo());
 
             mavenReportExecutorRequest.setProject(mavenProject);
 
-            MavenSession mavenSession = getMavenSession(getLocalArtifactRepository(), mavenProject);
+            MavenSession mavenSession = getMavenSession(getLocalRepo(), mavenProject);
             mavenSession.setCurrentProject(mavenProject);
             mavenSession.setProjects(Arrays.asList(mavenProject));
             mavenReportExecutorRequest.setMavenSession(mavenSession);
@@ -207,8 +211,8 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
         getContainer().lookup(MavenExecutionRequestPopulator.class).populateDefaults(request);
 
-        request.setLocalRepository(getLocalArtifactRepository());
-        request.setLocalRepositoryPath(getLocalArtifactRepository().getBasedir());
+        request.setLocalRepository(getLocalRepo());
+        request.setLocalRepositoryPath(getLocalRepo().getBasedir());
         request.setCacheNotFound(false);
 
         request.setSystemProperties(System.getProperties());
@@ -240,24 +244,32 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
         };
     }
 
-    private ArtifactRepository getLocalArtifactRepository() throws Exception {
-        if (localArtifactRepository != null) {
-            return localArtifactRepository;
-        }
+    private ArtifactRepository getLocalRepo() throws Exception {
+        ArtifactRepositoryFactory artifactRepositoryFactory = lookup(ArtifactRepositoryFactory.class);
+        ArtifactRepositoryLayout defaultArtifactRepositoryLayout = lookup(ArtifactRepositoryLayout.class, "default");
+        String updatePolicyFlag = ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
+        String checksumPolicyFlag = ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN;
+        ArtifactRepositoryPolicy snapshotsPolicy =
+                new ArtifactRepositoryPolicy(true, updatePolicyFlag, checksumPolicyFlag);
+        ArtifactRepositoryPolicy releasesPolicy =
+                new ArtifactRepositoryPolicy(true, updatePolicyFlag, checksumPolicyFlag);
         String localRepoPath =
-                System.getProperty("localRepository", MavenCli.userMavenConfigurationHome.getPath() + "/repository");
-
-        localArtifactRepository = lookup(RepositorySystem.class).createLocalRepository(new File(localRepoPath));
-        return localArtifactRepository;
+                System.getProperty("localRepository", MavenCli.USER_MAVEN_CONFIGURATION_HOME.getPath() + "/repository");
+        return artifactRepositoryFactory.createArtifactRepository(
+                "local",
+                Paths.get(localRepoPath).toUri().toASCIIString(),
+                defaultArtifactRepositoryLayout,
+                snapshotsPolicy,
+                releasesPolicy);
     }
 
     public Settings getSettings() throws ComponentLookupException, SettingsBuildingException {
 
         SettingsBuildingRequest settingsBuildingRequest = new DefaultSettingsBuildingRequest();
 
-        settingsBuildingRequest.setGlobalSettingsFile(MavenCli.DEFAULT_GLOBAL_SETTINGS_FILE);
+        settingsBuildingRequest.setGlobalSettingsFile(SettingsXmlConfigurationProcessor.DEFAULT_GLOBAL_SETTINGS_FILE);
 
-        settingsBuildingRequest.setUserSettingsFile(MavenCli.DEFAULT_USER_SETTINGS_FILE);
+        settingsBuildingRequest.setUserSettingsFile(SettingsXmlConfigurationProcessor.DEFAULT_USER_SETTINGS_FILE);
 
         settingsBuildingRequest.getSystemProperties().putAll(System.getProperties());
 
