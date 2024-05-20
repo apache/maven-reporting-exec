@@ -20,8 +20,9 @@ package org.apache.maven.shared.it;
  */
 
 import org.apache.maven.doxia.sink.Sink;
-import org.apache.maven.doxia.siterenderer.Renderer;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
 
@@ -30,47 +31,40 @@ import java.util.Locale;
 /**
  * Report that displays effective parameter values: used to check how report values
  * are inherited/overridden from build.pluginManagement and not build.plugins.
- *
- * @goal test
- * @phase site
  */
+@Mojo( name = "test", defaultPhase = LifecyclePhase.SITE )
 public class ConfigurationReport
     extends AbstractMavenReport
 {
     /**
      * Parameter with value defined in pluginManagement
-     *
-     * @parameter default-value="default"
      */
+    @Parameter( defaultValue = "${pluginManagement}" )
     private String pluginManagement;
 
     /**
      * Parameter with value defined in build.plugins
-     *
-     * @parameter default-value="default"
      */
+    @Parameter( defaultValue = "${buildPlugin}" )
     private String buildPlugin;
 
     /**
      * Parameter with value defined both in build.plugins and pluginManagement
-     *
-     * @parameter default-value="default"
      */
+    @Parameter( defaultValue = "${buildAndManagement}" )
     private String buildAndManagement;
 
     /**
      * Parameter with value defined both in build.plugins, pluginManagement and reporting.plugin.
-     *
-     * @parameter default-value="default"
      */
+    @Parameter( defaultValue = "${reportingPlugin}" )
     private String reportingPlugin;
 
     /**
      * Parameter with value defined both in build.plugins, pluginManagement, reporting.plugin and
      * reporting.plugin.reportSet.
-     *
-     * @parameter default-value="default"
      */
+    @Parameter( defaultValue = "${reportingPluginReportSet}" )
     private String reportingPluginReportSet;
 
     public String getOutputName()
@@ -86,24 +80,6 @@ public class ConfigurationReport
     public String getDescription( Locale locale )
     {
         return "Report Configuration";
-    }
-
-    @Override
-    protected Renderer getSiteRenderer()
-    {
-        return null;
-    }
-
-    @Override
-    protected String getOutputDirectory()
-    {
-        return null;
-    }
-
-    @Override
-    protected MavenProject getProject()
-    {
-        return null;
     }
 
     @Override

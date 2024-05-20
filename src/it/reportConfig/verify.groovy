@@ -24,7 +24,7 @@ content = f.text;
 // parameter merged from pluginManagement
 assert content.contains( 'pluginManagement = pluginManagement' );
 // parameter from build.plugin is not merged
-assert content.contains( 'buildPlugin = default' );
+assert content.contains( 'buildPlugin = null' );
 // parameter from build.plugin is not merged but pluginManagement
 assert content.contains( 'buildAndManagement = pluginManagement' );
 // parameter from reporting.plugin wins over pluginManagement
