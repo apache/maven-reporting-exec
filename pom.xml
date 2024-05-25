@@ -60,7 +60,7 @@
     <mavenVersion>3.6.3</mavenVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <sitePluginVersion>4.0.0-M13</sitePluginVersion>
+    <sitePluginVersion>4.0.0-M14</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.5.0</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2024-04-29T19:15:36Z</project.build.outputTimestamp>
   </properties>
@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
-      <version>4.0.0-M11</version>
+      <version>4.0.0-M12</version>
     </dependency>
 
     <!-- Maven -->
@@ -121,7 +121,7 @@
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-sink-api</artifactId>
-      <version>2.0.0-M10</version>
+      <version>2.0.0-M12</version>
     </dependency>
 
     <dependency>
@@ -212,7 +212,7 @@
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-site-renderer</artifactId>
-      <version>2.0.0-M18</version>
+      <version>2.0.0-M19</version>
       <scope>test</scope>
     </dependency>
 
