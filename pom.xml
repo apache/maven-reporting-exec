@@ -58,7 +58,7 @@
   <properties>
     <javaVersion>8</javaVersion>
     <mavenVersion>3.6.3</mavenVersion>
-    <resolverVersion>1.4.1</resolverVersion>
+    <resolverVersion>1.9.22</resolverVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <sitePluginVersion>3.20.0</sitePluginVersion>
     <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
