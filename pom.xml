@@ -60,8 +60,8 @@
     <mavenVersion>3.6.3</mavenVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <sitePluginVersion>4.0.0-M14</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.5.0</projectInfoReportsPluginVersion>
+    <sitePluginVersion>3.20.0</sitePluginVersion>
+    <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2024-05-25T09:33:31Z</project.build.outputTimestamp>
   </properties>
 
