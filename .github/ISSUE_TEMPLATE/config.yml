@@ -26,5 +26,5 @@ contact_links:
     about: Please ask a question or discuss here
 
   - name: Old JIRA Issues
-    url: https://issues.apache.org/jira/browse/MSHARED-1443?jql=project%20%3D%20MSHARED%20AND%20component%20%3D%20maven-reporting-exec
+    url: https://issues.apache.org/jira/browse/?jql=project%20%3D%20MSHARED%20AND%20component%20%3D%20maven-reporting-exec
     about: Please search old JIRA issues
