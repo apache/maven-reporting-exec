@@ -60,6 +60,10 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.WorkspaceReader;
 import org.eclipse.aether.repository.WorkspaceRepository;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Olivier Lamy
@@ -76,11 +80,13 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
     ArtifactRepository localArtifactRepository;
 
+    @Test
     public void testSimpleLookup() throws Exception {
         MavenReportExecutor mavenReportExecutor = lookup(MavenReportExecutor.class);
         assertNotNull(mavenReportExecutor);
     }
 
+    @Test
     public void testSimpleBuildReports() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("test-javadoc");
@@ -98,6 +104,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
                 "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputName());
     }
 
+    @Test
     public void testMultipleReportSets() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("javadoc");
@@ -119,6 +126,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
                 "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputName());
     }
 
+    @Test
     public void testReportingPluginWithDependenciesInPluginManagement() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("javadoc");
