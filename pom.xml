@@ -60,9 +60,11 @@
     <mavenVersion>3.6.3</mavenVersion>
     <resolverVersion>1.4.1</resolverVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <sitePluginVersion>3.20.0</sitePluginVersion>
-    <projectInfoReportsPluginVersion>3.7.0</projectInfoReportsPluginVersion>
+    <sitePluginVersion>${version.maven-site-plugin}</sitePluginVersion>
+    <projectInfoReportsPluginVersion>${version.maven-project-info-reports-plugin}</projectInfoReportsPluginVersion>
     <project.build.outputTimestamp>2024-10-15T18:22:20Z</project.build.outputTimestamp>
+
+    <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
   </properties>
 
   <dependencies>
