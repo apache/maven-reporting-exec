@@ -18,6 +18,8 @@
  */
 package org.apache.maven.reporting.exec;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -50,38 +52,38 @@ import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
 import org.apache.maven.settings.building.SettingsBuilder;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.codehaus.plexus.testing.PlexusTest;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.WorkspaceReader;
 import org.eclipse.aether.repository.WorkspaceRepository;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Olivier Lamy
  */
-public class TestDefaultMavenReportExecutor extends PlexusTestCase {
-    @Override
-    protected void customizeContainerConfiguration(
-            @SuppressWarnings("unused") final ContainerConfiguration configuration) {
-        super.customizeContainerConfiguration(configuration);
-        configuration.setAutoWiring(true).setClassPathScanning(PlexusConstants.SCANNING_CACHE);
-    }
+@PlexusTest
+public class TestDefaultMavenReportExecutor {
+
+    @Inject
+    PlexusContainer plexusContainer;
 
     MavenExecutionRequest request = null;
 
-    ArtifactRepository localArtifactRepository;
-
-    public void testSimpleLookup() throws Exception {
-        MavenReportExecutor mavenReportExecutor = lookup(MavenReportExecutor.class);
-        assertNotNull(mavenReportExecutor);
+    @Test
+    void simpleLookup() throws ComponentLookupException {
+        assertNotNull(plexusContainer.lookup(MavenReportExecutor.class));
     }
 
-    public void testSimpleBuildReports() throws Exception {
+    @Test
+    void simpleBuildReports() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("test-javadoc");
         reportSet.getReports().add("javadoc");
@@ -98,7 +100,8 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
                 "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputName());
     }
 
-    public void testMultipleReportSets() throws Exception {
+    @Test
+    void multipleReportSets() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("javadoc");
         ReportSet reportSet2 = new ReportSet();
@@ -119,7 +122,8 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
                 "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputName());
     }
 
-    public void testReportingPluginWithDependenciesInPluginManagement() throws Exception {
+    @Test
+    void reportingPluginWithDependenciesInPluginManagement() throws Exception {
         ReportSet reportSet = new ReportSet();
         reportSet.getReports().add("javadoc");
 
@@ -148,7 +152,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
     private List<MavenReportExecution> buildReports(MavenProject mavenProject, ReportSet... javadocReportSets)
             throws Exception {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        ClassRealm realm = getContainer().getContainerRealm();
+        ClassRealm realm = plexusContainer.getContainerRealm();
 
         Thread.currentThread().setContextClassLoader(realm);
         try {
@@ -176,7 +180,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
             mavenReportExecutorRequest.setReportPlugins(reportPlugins.toArray(new ReportPlugin[1]));
 
-            MavenReportExecutor mavenReportExecutor = lookup(MavenReportExecutor.class);
+            MavenReportExecutor mavenReportExecutor = plexusContainer.lookup(MavenReportExecutor.class);
 
             return mavenReportExecutor.buildMavenReports(mavenReportExecutorRequest);
         } finally {
@@ -207,9 +211,9 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
         });
         final Settings settings = getSettings();
 
-        getContainer().lookup(MavenExecutionRequestPopulator.class).populateFromSettings(request, settings);
+        plexusContainer.lookup(MavenExecutionRequestPopulator.class).populateFromSettings(request, settings);
 
-        getContainer().lookup(MavenExecutionRequestPopulator.class).populateDefaults(request);
+        plexusContainer.lookup(MavenExecutionRequestPopulator.class).populateDefaults(request);
 
         request.setLocalRepository(getLocalRepo());
         request.setLocalRepositoryPath(getLocalRepo().getBasedir());
@@ -221,7 +225,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
         RepositorySystemSession repositorySystemSession = buildRepositorySystemSession(request);
 
-        return new MavenSession(getContainer(), repositorySystemSession, request, result) {
+        return new MavenSession(plexusContainer, repositorySystemSession, request, result) {
             @Override
             public MavenProject getTopLevelProject() {
                 return mavenProject;
@@ -245,8 +249,9 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
     }
 
     private ArtifactRepository getLocalRepo() throws Exception {
-        ArtifactRepositoryFactory artifactRepositoryFactory = lookup(ArtifactRepositoryFactory.class);
-        ArtifactRepositoryLayout defaultArtifactRepositoryLayout = lookup(ArtifactRepositoryLayout.class, "default");
+        ArtifactRepositoryFactory artifactRepositoryFactory = plexusContainer.lookup(ArtifactRepositoryFactory.class);
+        ArtifactRepositoryLayout defaultArtifactRepositoryLayout =
+                plexusContainer.lookup(ArtifactRepositoryLayout.class, "default");
         String updatePolicyFlag = ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
         String checksumPolicyFlag = ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN;
         ArtifactRepositoryPolicy snapshotsPolicy =
@@ -273,7 +278,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
         settingsBuildingRequest.getSystemProperties().putAll(System.getProperties());
 
-        return getContainer()
+        return plexusContainer
                 .lookup(SettingsBuilder.class)
                 .build(settingsBuildingRequest)
                 .getEffectiveSettings();
@@ -340,8 +345,7 @@ public class TestDefaultMavenReportExecutor extends PlexusTestCase {
 
     private RepositorySystemSession buildRepositorySystemSession(MavenExecutionRequest request)
             throws ComponentLookupException {
-        DefaultMaven defaultMaven = (DefaultMaven) getContainer().lookup(Maven.class);
-
+        DefaultMaven defaultMaven = (DefaultMaven) plexusContainer.lookup(Maven.class);
         return defaultMaven.newRepositorySession(request);
     }
 }
