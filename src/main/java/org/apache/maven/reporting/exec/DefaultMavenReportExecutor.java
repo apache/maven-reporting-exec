@@ -111,24 +111,25 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
     private final PluginVersionResolver pluginVersionResolver;
 
+    /**
+     * All packages which are imported from the Site plugin ClassRealm to the report plugin ClassRealm.
+     * This should correlate to the list of artifacts excluded via {@link #EXCLUDES} (although imports are always considered first).
+     * The given package names are used as prefix, so all classes/resources from the given packages and their sub-packages are imported.
+     */
     private static final List<String> IMPORTS = Arrays.asList(
-            "org.apache.maven.reporting.MavenReport",
-            "org.apache.maven.reporting.MavenMultiPageReport",
-            // TODO Will be removed after Doxia 2.0.0
-            "org.apache.maven.doxia.siterenderer.Renderer",
-            "org.apache.maven.doxia.siterenderer.SiteRenderer",
-            "org.apache.maven.doxia.sink.SinkFactory",
-            // TODO Will be removed after Doxia 2.0.0
-            "org.codehaus.doxia.sink.Sink",
-            "org.apache.maven.doxia.sink.Sink",
-            "org.apache.maven.doxia.sink.SinkEventAttributes",
-            // TODO Will be removed with Doxia 2.0.0
-            "org.apache.maven.doxia.logging.LogEnabled",
-            // TODO Will be removed with Doxia 2.0.0
-            "org.apache.maven.doxia.logging.Log");
+            "org.apache.maven.reporting",
+            "org.apache.maven.doxia.siterenderer",
+            "org.apache.maven.doxia.macro",
+            "org.apache.maven.doxia.parser",
+            "org.apache.maven.doxia.sink",
+            "org.apache.maven.doxia.util");
 
+    /**
+     * The following artifacts are provided in the version as referenced in the site plugin (to prevent versions conflicts with the one used by the report plugin).
+     * This must correlate to the list of packages imported in {@link #IMPORTS}.
+     */
     private static final List<String> EXCLUDES =
-            Arrays.asList("doxia-site-renderer", "doxia-sink-api", "maven-reporting-api");
+            Arrays.asList("doxia-sink-api", "doxia-core", "doxia-site-renderer", "maven-reporting-api");
 
     @Inject
     public DefaultMavenReportExecutor(
