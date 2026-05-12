@@ -112,15 +112,24 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
     private final PluginVersionResolver pluginVersionResolver;
 
     /**
-     * All packages which are imported from the Site plugin ClassRealm to the report plugin ClassRealm.
-     * This should correlate to the list of artifacts excluded via {@link #EXCLUDES} (although imports are always considered first).
+     * All packages which are imported from the Site plugin ClassRealm to the report plugin ClassRealm, overriding classes/packages from the actual report plugin classloader if any. <br>
+     * This should correlate to the list of artifacts excluded via {@link #EXCLUDES} (imports are always considered first).
      * The given package names are used as prefix, so all classes/resources from the given packages and their sub-packages are imported.
+     *
+     * The order of loading is the following:
+     * <ol>
+     * <li>imported classes/resources from the Site plugin ClassRealm (only the ones from the given packages/classes)</li>
+     * <li>classes/resources from the report plugin ClassRealm (except the ones from the given packages)</li>
+     * <li>classes/resources from the parent ClassLoader (Site plugin ClassRealm) (except from the EXCLUDED artifacts).</li>
+     * </ol>
      */
     private static final List<String> IMPORTS = Arrays.asList(
             "org.apache.maven.reporting",
             "org.apache.maven.doxia.siterenderer",
-            "org.apache.maven.doxia.macro",
-            "org.apache.maven.doxia.parser",
+            // prevent macros/parsers from being imported, as otherwise the Doxia macros/modules might be registered
+            // twice in the
+            // MacroManager/ParserModuleManager (not separated between m-site-p and reporting-p) as both would implement
+            // the same interface from the m-s-p classloader
             "org.apache.maven.doxia.sink",
             "org.apache.maven.doxia.util");
 
@@ -129,7 +138,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
      * This must correlate to the list of packages imported in {@link #IMPORTS}.
      */
     private static final List<String> EXCLUDES =
-            Arrays.asList("doxia-sink-api", "doxia-core", "doxia-site-renderer", "maven-reporting-api");
+            Arrays.asList("doxia-sink-api", "doxia-site-renderer", "maven-reporting-api");
 
     @Inject
     public DefaultMavenReportExecutor(
