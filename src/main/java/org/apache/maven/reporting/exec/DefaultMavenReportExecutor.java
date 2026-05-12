@@ -126,10 +126,10 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
     private static final List<String> IMPORTS = Arrays.asList(
             "org.apache.maven.reporting",
             "org.apache.maven.doxia.siterenderer",
-            // prevent macros/parsers from being imported, as otherwise the Doxia macros/modules might be registered
-            // twice in the
-            // MacroManager/ParserModuleManager (not separated between m-site-p and reporting-p) as both would implement
-            // the same interface from the m-s-p classloader
+            // prevent Macros/ParserModules from being imported and excluded as otherwise they might be registered
+            // twice in the MacroManager/ParserModuleManager (not separated between m-site-p and reporting-p)
+            // as both would implement the same interface from the m-s-p classloader
+            // use those in the versions being referenced in the reporting-plugin
             "org.apache.maven.doxia.sink",
             "org.apache.maven.doxia.util");
 
