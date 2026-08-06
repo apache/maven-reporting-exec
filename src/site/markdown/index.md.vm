@@ -1,77 +1,50 @@
- -----
- Introduction
- -----
- Hervé Boutemy
- -----
- 2013-07-24
- -----
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
- ~~ Licensed to the Apache Software Foundation (ASF) under one
- ~~ or more contributor license agreements.  See the NOTICE file
- ~~ distributed with this work for additional information
- ~~ regarding copyright ownership.  The ASF licenses this file
- ~~ to you under the Apache License, Version 2.0 (the
- ~~ "License"); you may not use this file except in compliance
- ~~ with the License.  You may obtain a copy of the License at
- ~~
- ~~   http://www.apache.org/licenses/LICENSE-2.0
- ~~
- ~~ Unless required by applicable law or agreed to in writing,
- ~~ software distributed under the License is distributed on an
- ~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- ~~ KIND, either express or implied.  See the License for the
- ~~ specific language governing permissions and limitations
- ~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
- ~~ NOTE: For help with the syntax of this file, see:
- ~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-${project.name}
+# ${project.name}
 
-  Classes to prepare report plugins execution with Maven 3, through
-  {{{./apidocs/org/apache/maven/reporting/exec/MavenReportExecutor.html}MavenReportExecutor}}
-  ({{{./apidocs/org/apache/maven/reporting/exec/DefaultMavenReportExecutor.html}implementation}}).
+Classes to prepare report plugins execution with Maven 3, through [MavenReportExecutor](./apidocs/org/apache/maven/reporting/exec/MavenReportExecutor.html) ([implementation](./apidocs/org/apache/maven/reporting/exec/DefaultMavenReportExecutor.html)).
 
-  Contrary to Maven 2.x:
+Contrary to Maven 2.x:
 
-  [[1]] report <<<\<version\>>>> explicit definition is optional:\
-  if no version is specified for a report plugin, version is determined by
+1. report `<version>` explicit definition is optional:  
+    if no version is specified for a report plugin, version is determined by
+    1. searching for the plugin in the `build/plugins` section of the pom,
+    1. searching for the plugin in the `build/pluginManagement` section of the pom,
+    1. asking [PluginVersionResolver](/ref/current/maven-core/apidocs/org/apache/maven/plugin/version/PluginVersionResolver.html) to get a fallback version and display a warning as it's not a recommended use,
+1. plugin configuration from `build/pluginManagement` is injected into `reporting/plugins` (since Maven Reporting Executor 1.2, which is [used by Maven Site Plugin 3.4](/plugins/maven-site-plugin/history.html)).
 
-    [[1]] searching for the plugin in the <<<build/plugins>>> section of the pom,
- 
-    [[2]] searching for the plugin in the <<<build/pluginManagement>>> section of the pom,
+Notice on now obsolete reportPlugin format
+------------------------------------------
 
-    [[3]] asking {{{/ref/current/maven-core/apidocs/org/apache/maven/plugin/version/PluginVersionResolver.html}PluginVersionResolver}}
-    to get a fallback version and display a warning as it's not a recommended use,
+Since 1.4 (used by Maven Site Plugin 3.7), the request can (and should) be populated from [pom's `<reporting.plugins>` section](/ref/current/maven-model/maven.html#class_reporting), injected in Mojo parameter as `${esc.d}{project.reporting.plugins}` default value:
 
-    []
-
-  [[2]] plugin configuration from <<<build/pluginManagement>>> is injected into <<<reporting/plugins>>>
-  (since Maven Reporting Executor 1.2, which is {{{/plugins/maven-site-plugin/history.html}used by Maven Site Plugin 3.4}}).
-
-  []
-
-* Notice on now obsolete reportPlugin format
-
-  Since 1.4 (used by Maven Site Plugin 3.7), the request can (and should) be populated from
-  {{{/ref/current/maven-model/maven.html#class_reporting}pom's <<<\<reporting.plugins\>>>> section}},
-  injected in Mojo parameter as <<<$\{project.reporting.plugins\}>>> default value:
-
-+----+
+```unknown
     @Parameter( defaultValue = "${esc.d}{project.reporting.plugins}", readonly = true )
     private org.apache.maven.model.ReportPlugin[] reportingPlugins;
-+----+
+```
 
-  This section is kept to explain what happened in previous releases of the component, but this approach has been
-  abandonned so far after discovering major limitations: see
-  {{{/plugins-archives/maven-site-plugin-3.9.0/maven-3.html#New_Configuration_Maven_3_only_no_reports_configuration_inheritance}Maven Site Plugin 3.9.0 documentation}}
-  for more details.
+This section is kept to explain what happened in previous releases of the component, but this approach has been abandonned so far after discovering major limitations: see [Maven Site Plugin 3.9.0 documentation](/plugins-archives/maven-site-plugin-3.9.0/maven-3.html#New_Configuration_Maven_3_only_no_reports_configuration_inheritance) for more details.
 
-  Report plugins can be configured in <<<\<configuration\>>>> element of <<<maven-site-plugin>>> or any other
-  report building plugin with following XML model corresponding to plugin's
-  <<<List<{{{./apidocs/org/apache/maven/reporting/exec/ReportPlugin.html}ReportPlugin}}>>>> parameter:
+Report plugins can be configured in `<configuration>` element of `maven-site-plugin` or any other report building plugin with following XML model corresponding to plugin's `List<`[`ReportPlugin`](./apidocs/org/apache/maven/reporting/exec/ReportPlugin.html)`>` parameter:
 
-+----+
+```unknown
 <reportPlugins>
   <reportPlugin>
     <groupId/>
@@ -88,22 +61,13 @@ ${project.name}
     </reportSets>
   </reportPlugin>
 </reportPlugins>
-+----+
+```
 
-  Notice this is the model from plugins in
-  {{{/ref/current/maven-model/maven.html#class_reporting}<<<\<reporting\>>>> section of POM}}:
+Notice this is the model from plugins in [`<reporting>` section of POM](/ref/current/maven-model/maven.html#class_reporting):
 
-  * without <<<\<inherited\>>>> element: reporting plugins configuration inheritance is not supported at this level
-  (see {{{https://issues.apache.org/jira/browse/MSITE-484}MSITE-484}}),
+- without `<inherited>` element: reporting plugins configuration inheritance is not supported at this level (see [MSITE-484](https://issues.apache.org/jira/browse/MSITE-484)),
+- with additional `<reports>` list outside `<reportSet>` that simplifies reports configuration in usual cases.
 
-  * with additional <<<\<reports\>>>> list outside <<<\<reportSet\>>>> that simplifies reports configuration in usual cases.
+Maven 3 core makes an automatic transformation of `<reporting>` POM section (which supports configuration inheritance) to `maven-site-plugin`'s `reportPlugins` configuration through the [ReportingConverter](/ref/current/maven-model-builder/apidocs/org/apache/maven/model/plugin/ReportingConverter.html) component.
 
-  []
-
-  Maven 3 core makes an automatic transformation of <<<\<reporting\>>>> POM section (which supports configuration inheritance)
-  to <<<maven-site-plugin>>>'s <<<reportPlugins>>> configuration through the
-  {{{/ref/current/maven-model-builder/apidocs/org/apache/maven/model/plugin/ReportingConverter.html}ReportingConverter}}
-  component.
-
-  But Maven 3 does not do the same job for any other plugin wanting to use reports, like <<<maven-pdf-plugin>>> for example:
-  this is one of the key limitations that made Maven team drop this approach.
+But Maven 3 does not do the same job for any other plugin wanting to use reports, like `maven-pdf-plugin` for example: this is one of the key limitations that made Maven team drop this approach.
