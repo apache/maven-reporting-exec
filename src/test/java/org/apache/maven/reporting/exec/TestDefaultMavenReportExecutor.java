@@ -158,8 +158,6 @@ public class TestDefaultMavenReportExecutor {
         try {
             MavenReportExecutorRequest mavenReportExecutorRequest = new MavenReportExecutorRequest();
 
-            mavenReportExecutorRequest.setLocalRepository(getLocalRepo());
-
             mavenReportExecutorRequest.setProject(mavenProject);
 
             MavenSession mavenSession = getMavenSession(getLocalRepo(), mavenProject);
