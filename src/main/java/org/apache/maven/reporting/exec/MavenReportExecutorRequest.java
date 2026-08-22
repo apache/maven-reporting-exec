@@ -21,7 +21,6 @@ package org.apache.maven.reporting.exec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
@@ -35,9 +34,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  */
 public class MavenReportExecutorRequest {
 
-    @Deprecated
-    private ArtifactRepository localRepository;
-
     private MavenSession mavenSession;
 
     private String executionId;
@@ -45,16 +41,6 @@ public class MavenReportExecutorRequest {
     private MavenProject project;
 
     private ReportPlugin[] reportPlugins;
-
-    @Deprecated
-    public ArtifactRepository getLocalRepository() {
-        return localRepository;
-    }
-
-    @Deprecated
-    public void setLocalRepository(ArtifactRepository localRepository) {
-        this.localRepository = localRepository;
-    }
 
     public MavenSession getMavenSession() {
         return mavenSession;

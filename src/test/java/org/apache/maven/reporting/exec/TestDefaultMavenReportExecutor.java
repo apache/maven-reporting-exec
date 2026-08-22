@@ -21,7 +21,6 @@ package org.apache.maven.reporting.exec;
 import javax.inject.Inject;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,10 +29,6 @@ import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.cli.MavenCli;
 import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
@@ -95,9 +90,9 @@ public class TestDefaultMavenReportExecutor {
         assertEquals(2, mavenReportExecutions.size());
         assertEquals(
                 "testapidocs/index",
-                mavenReportExecutions.get(0).getMavenReport().getOutputName());
+                mavenReportExecutions.get(0).getMavenReport().getOutputPath());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputPath());
     }
 
     @Test
@@ -114,12 +109,12 @@ public class TestDefaultMavenReportExecutor {
         assertNotNull(mavenReportExecutions);
         assertEquals(3, mavenReportExecutions.size());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(0).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(0).getMavenReport().getOutputPath());
         assertEquals(
                 "testapidocs/index",
-                mavenReportExecutions.get(1).getMavenReport().getOutputName());
+                mavenReportExecutions.get(1).getMavenReport().getOutputPath());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputPath());
     }
 
     @Test
@@ -131,7 +126,7 @@ public class TestDefaultMavenReportExecutor {
         Plugin plugin = new Plugin();
         plugin.setGroupId("org.apache.maven.plugins");
         plugin.setArtifactId("maven-javadoc-plugin");
-        plugin.setVersion("3.4.0");
+        plugin.setVersion("3.12.0");
         Dependency dependency = new Dependency();
         dependency.setGroupId("commons-lang");
         dependency.setArtifactId("commons-lang");
@@ -158,11 +153,9 @@ public class TestDefaultMavenReportExecutor {
         try {
             MavenReportExecutorRequest mavenReportExecutorRequest = new MavenReportExecutorRequest();
 
-            mavenReportExecutorRequest.setLocalRepository(getLocalRepo());
-
             mavenReportExecutorRequest.setProject(mavenProject);
 
-            MavenSession mavenSession = getMavenSession(getLocalRepo(), mavenProject);
+            MavenSession mavenSession = getMavenSession(mavenProject);
             mavenSession.setCurrentProject(mavenProject);
             mavenSession.setProjects(Arrays.asList(mavenProject));
             mavenReportExecutorRequest.setMavenSession(mavenSession);
@@ -170,7 +163,7 @@ public class TestDefaultMavenReportExecutor {
             ReportPlugin reportPlugin = new ReportPlugin();
             reportPlugin.setGroupId("org.apache.maven.plugins");
             reportPlugin.setArtifactId("maven-javadoc-plugin");
-            reportPlugin.setVersion("3.4.0");
+            reportPlugin.setVersion("3.12.0");
 
             for (ReportSet reportSet : javadocReportSets) {
                 reportPlugin.getReportSets().add(reportSet);
@@ -188,10 +181,8 @@ public class TestDefaultMavenReportExecutor {
         }
     }
 
-    protected MavenSession getMavenSession(ArtifactRepository localRepository, final MavenProject mavenProject)
-            throws Exception {
+    protected MavenSession getMavenSession(final MavenProject mavenProject) throws Exception {
         request = new DefaultMavenExecutionRequest();
-        request.setLocalRepository(localRepository);
 
         request.setWorkspaceReader(new WorkspaceReader() {
             @Override
@@ -213,10 +204,14 @@ public class TestDefaultMavenReportExecutor {
 
         plexusContainer.lookup(MavenExecutionRequestPopulator.class).populateFromSettings(request, settings);
 
+        // surefire passes the build's own local repository; without it the populator uses the user default
+        String localRepository = System.getProperty("localRepository");
+        if (localRepository != null) {
+            request.setLocalRepositoryPath(localRepository);
+        }
+
         plexusContainer.lookup(MavenExecutionRequestPopulator.class).populateDefaults(request);
 
-        request.setLocalRepository(getLocalRepo());
-        request.setLocalRepositoryPath(getLocalRepo().getBasedir());
         request.setCacheNotFound(false);
 
         request.setSystemProperties(System.getProperties());
@@ -246,26 +241,6 @@ public class TestDefaultMavenReportExecutor {
                 return mavenProject;
             }
         };
-    }
-
-    private ArtifactRepository getLocalRepo() throws Exception {
-        ArtifactRepositoryFactory artifactRepositoryFactory = plexusContainer.lookup(ArtifactRepositoryFactory.class);
-        ArtifactRepositoryLayout defaultArtifactRepositoryLayout =
-                plexusContainer.lookup(ArtifactRepositoryLayout.class, "default");
-        String updatePolicyFlag = ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
-        String checksumPolicyFlag = ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN;
-        ArtifactRepositoryPolicy snapshotsPolicy =
-                new ArtifactRepositoryPolicy(true, updatePolicyFlag, checksumPolicyFlag);
-        ArtifactRepositoryPolicy releasesPolicy =
-                new ArtifactRepositoryPolicy(true, updatePolicyFlag, checksumPolicyFlag);
-        String localRepoPath =
-                System.getProperty("localRepository", MavenCli.USER_MAVEN_CONFIGURATION_HOME.getPath() + "/repository");
-        return artifactRepositoryFactory.createArtifactRepository(
-                "local",
-                Paths.get(localRepoPath).toUri().toASCIIString(),
-                defaultArtifactRepositoryLayout,
-                snapshotsPolicy,
-                releasesPolicy);
     }
 
     public Settings getSettings() throws ComponentLookupException, SettingsBuildingException {
