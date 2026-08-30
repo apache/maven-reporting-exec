@@ -181,6 +181,10 @@ public class TestDefaultMavenReportExecutor {
         }
     }
 
+    // no non-deprecated 3.x API exists to hand-build a session: every MavenSession constructor is
+    // deprecated (Maven itself uses this one in DefaultMaven), and populateFromSettings has no
+    // public successor -- its logic moved to a private copy in SettingsXmlConfigurationProcessor.
+    @SuppressWarnings("deprecation")
     protected MavenSession getMavenSession(final MavenProject mavenProject) throws Exception {
         request = new DefaultMavenExecutionRequest();
 
