@@ -67,7 +67,16 @@ public class ConfigurationReport
     @Parameter( defaultValue = "${reportingPluginReportSet}" )
     private String reportingPluginReportSet;
 
+    /**
+     * @deprecated use {@link #getOutputPath()} instead
+     */
+    @Deprecated
     public String getOutputName()
+    {
+        return getOutputPath();
+    }
+
+    public String getOutputPath()
     {
         return "configuration";
     }
