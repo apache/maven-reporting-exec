@@ -30,9 +30,9 @@ import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.bridge.MavenRepositorySystem;
 import org.apache.maven.cli.MavenCli;
 import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -131,7 +131,7 @@ public class TestDefaultMavenReportExecutor {
         Plugin plugin = new Plugin();
         plugin.setGroupId("org.apache.maven.plugins");
         plugin.setArtifactId("maven-javadoc-plugin");
-        plugin.setVersion("3.4.0");
+        plugin.setVersion("3.12.0");
         Dependency dependency = new Dependency();
         dependency.setGroupId("commons-lang");
         dependency.setArtifactId("commons-lang");
@@ -168,7 +168,7 @@ public class TestDefaultMavenReportExecutor {
             ReportPlugin reportPlugin = new ReportPlugin();
             reportPlugin.setGroupId("org.apache.maven.plugins");
             reportPlugin.setArtifactId("maven-javadoc-plugin");
-            reportPlugin.setVersion("3.4.0");
+            reportPlugin.setVersion("3.12.0");
 
             for (ReportSet reportSet : javadocReportSets) {
                 reportPlugin.getReportSets().add(reportSet);
@@ -247,7 +247,6 @@ public class TestDefaultMavenReportExecutor {
     }
 
     private ArtifactRepository getLocalRepo() throws Exception {
-        ArtifactRepositoryFactory artifactRepositoryFactory = plexusContainer.lookup(ArtifactRepositoryFactory.class);
         ArtifactRepositoryLayout defaultArtifactRepositoryLayout =
                 plexusContainer.lookup(ArtifactRepositoryLayout.class, "default");
         String updatePolicyFlag = ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS;
@@ -258,7 +257,7 @@ public class TestDefaultMavenReportExecutor {
                 new ArtifactRepositoryPolicy(true, updatePolicyFlag, checksumPolicyFlag);
         String localRepoPath =
                 System.getProperty("localRepository", MavenCli.USER_MAVEN_CONFIGURATION_HOME.getPath() + "/repository");
-        return artifactRepositoryFactory.createArtifactRepository(
+        return MavenRepositorySystem.createArtifactRepository(
                 "local",
                 Paths.get(localRepoPath).toUri().toASCIIString(),
                 defaultArtifactRepositoryLayout,
