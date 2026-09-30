@@ -30,13 +30,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
+import org.apache.maven.api.plugin.MojoException;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.internal.impl.DefaultProject;
+import org.apache.maven.internal.impl.InternalMavenSession;
 import org.apache.maven.lifecycle.LifecycleExecutor;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MavenPluginManager;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoNotFoundException;
 import org.apache.maven.plugin.PluginConfigurationException;
 import org.apache.maven.plugin.PluginContainerException;
@@ -154,7 +159,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
     @Override
     public List<MavenReportExecution> buildMavenReports(MavenReportExecutorRequest mavenReportExecutorRequest)
-            throws MojoExecutionException {
+            throws MojoException {
         if (mavenReportExecutorRequest.getReportPlugins() == null) {
             return Collections.emptyList();
         }
@@ -174,7 +179,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
                 reportExecutions.addAll(buildReportPlugin(mavenReportExecutorRequest, reportPlugin));
             }
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to get report for " + pluginKey, e);
+            throw new MojoException("Failed to get report for " + pluginKey, e);
         }
 
         return reportExecutions;
@@ -192,7 +197,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         mergePluginToReportPlugin(mavenReportExecutorRequest, plugin, reportPlugin);
 
         PluginDescriptor pluginDescriptor =
-                mavenPluginManagerHelper.getPluginDescriptor(plugin, mavenReportExecutorRequest.getMavenSession());
+                mavenPluginManagerHelper.getPluginDescriptor(plugin, coreSession(mavenReportExecutorRequest));
 
         // step 2: prepare the goals
         List<GoalWithConf> goalsWithConfiguration = new ArrayList<>();
@@ -287,7 +292,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             throw new MojoNotFoundException(report.getGoal(), pluginDescriptor);
         }
 
-        MavenProject project = mavenReportExecutorRequest.getProject();
+        MavenProject project = coreProject(mavenReportExecutorRequest);
         if (!userDefined && mojoDescriptor.isAggregator() && !canAggregate(project)) {
             // aggregator mojos automatically added from plugin are only run at execution root
             return null;
@@ -300,7 +305,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
         mavenPluginManagerHelper.setupPluginRealm(
                 pluginDescriptor,
-                mavenReportExecutorRequest.getMavenSession(),
+                coreSession(mavenReportExecutorRequest),
                 Thread.currentThread().getContextClassLoader(),
                 IMPORTS,
                 EXCLUDES);
@@ -343,12 +348,12 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
         MavenReportExecution mavenReportExecution = new MavenReportExecution(
                 report.getGoal(),
-                mojoExecution.getPlugin(),
+                mojoExecution.getPlugin().getDelegate(),
                 mavenReport,
                 pluginDescriptor.getClassRealm(),
                 userDefined);
 
-        lifecycleExecutor.calculateForkedExecutions(mojoExecution, mavenReportExecutorRequest.getMavenSession());
+        lifecycleExecutor.calculateForkedExecutions(mojoExecution, coreSession(mavenReportExecutorRequest));
 
         if (!mojoExecution.getForkedExecutions().isEmpty()) {
             String reportDescription = pluginDescriptor.getArtifactId() + ":" + report.getGoal() + " report";
@@ -368,12 +373,33 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
 
             LOGGER.info("Preparing {} requires {}", reportDescription, execution);
 
-            lifecycleExecutor.executeForkedExecutions(mojoExecution, mavenReportExecutorRequest.getMavenSession());
+            lifecycleExecutor.executeForkedExecutions(mojoExecution, coreSession(mavenReportExecutorRequest));
 
             LOGGER.info("{} for {} preparation done", execution, reportDescription);
         }
 
         return mavenReportExecution;
+    }
+
+    /**
+     * GAP: the Maven 4 API has no way to get from {@link Session} to the core session needed by
+     * {@link MavenPluginManager} and {@link LifecycleExecutor}, so this relies on maven-core's internal bridge.
+     */
+    private static MavenSession coreSession(MavenReportExecutorRequest request) {
+        return InternalMavenSession.from(request.getSession()).getMavenSession();
+    }
+
+    /**
+     * GAP: the Maven 4 API {@link Project} has no execution root flag ({@link Project#isRootProject()} means the
+     * directory holding <code>.mvn</code>) nor a way to build a {@link MojoExecution}, so the core project is needed.
+     */
+    private static MavenProject coreProject(MavenReportExecutorRequest request) {
+        Project project = request.getProject();
+        if (project instanceof DefaultProject) {
+            return ((DefaultProject) project).getProject();
+        }
+        throw new MojoException(
+                "Unsupported project implementation " + project.getClass().getName());
     }
 
     private boolean canAggregate(MavenProject project) {
@@ -390,7 +416,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             throws PluginContainerException, PluginConfigurationException {
         try {
             Mojo mojo = mavenPluginManager.getConfiguredMojo(
-                    Mojo.class, mavenReportExecutorRequest.getMavenSession(), mojoExecution);
+                    Mojo.class, coreSession(mavenReportExecutorRequest), mojoExecution);
 
             return (MavenReport) mojo;
         } catch (ClassCastException e) {
@@ -557,7 +583,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             return reportPlugin.getVersion();
         }
 
-        MavenProject project = mavenReportExecutorRequest.getProject();
+        MavenProject project = coreProject(mavenReportExecutorRequest);
 
         // search in the build section
         if (project.getBuild() != null) {
@@ -597,7 +623,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
         plugin.setArtifactId(reportPlugin.getArtifactId());
 
         PluginVersionRequest pluginVersionRequest =
-                new DefaultPluginVersionRequest(plugin, mavenReportExecutorRequest.getMavenSession());
+                new DefaultPluginVersionRequest(plugin, coreSession(mavenReportExecutorRequest));
 
         PluginVersionResult result = pluginVersionResolver.resolve(pluginVersionRequest);
         LOGGER.debug("Resolved {} version from repository: {}", reportPluginKey, result.getVersion());
@@ -641,7 +667,7 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
      */
     private void mergePluginToReportPlugin(
             MavenReportExecutorRequest mavenReportExecutorRequest, Plugin buildPlugin, ReportPlugin reportPlugin) {
-        Build build = mavenReportExecutorRequest.getProject().getBuild();
+        Build build = coreProject(mavenReportExecutorRequest).getBuild();
         Plugin configuredPlugin = find(reportPlugin, build.getPlugins());
         if (configuredPlugin == null && build.getPluginManagement() != null) {
             configuredPlugin = find(reportPlugin, build.getPluginManagement().getPlugins());

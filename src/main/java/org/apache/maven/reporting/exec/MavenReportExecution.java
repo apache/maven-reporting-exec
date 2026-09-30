@@ -18,7 +18,7 @@
  */
 package org.apache.maven.reporting.exec;
 
-import org.apache.maven.model.Plugin;
+import org.apache.maven.api.model.Plugin;
 import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 

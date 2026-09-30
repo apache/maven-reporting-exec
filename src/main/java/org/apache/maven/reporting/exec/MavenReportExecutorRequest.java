@@ -21,8 +21,9 @@ package org.apache.maven.reporting.exec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
+import org.apache.maven.api.xml.XmlNode;
 import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
@@ -34,20 +35,20 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  */
 public class MavenReportExecutorRequest {
 
-    private MavenSession mavenSession;
+    private Session session;
 
     private String executionId;
 
-    private MavenProject project;
+    private Project project;
 
     private ReportPlugin[] reportPlugins;
 
-    public MavenSession getMavenSession() {
-        return mavenSession;
+    public Session getSession() {
+        return session;
     }
 
-    public void setMavenSession(MavenSession mavenSession) {
-        this.mavenSession = mavenSession;
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public String getExecutionId() {
@@ -58,11 +59,11 @@ public class MavenReportExecutorRequest {
         this.executionId = executionId;
     }
 
-    public MavenProject getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(MavenProject project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 
@@ -80,26 +81,26 @@ public class MavenReportExecutorRequest {
      * @param reportPlugins the report plugins from <code>&lt;reporting&gt;</code> section
      * @since 1.4
      */
-    public void setReportPlugins(org.apache.maven.model.ReportPlugin[] reportPlugins) {
+    public void setReportPlugins(org.apache.maven.api.model.ReportPlugin[] reportPlugins) {
         setReportPlugins(new ReportPlugin[reportPlugins.length]);
 
         int i = 0;
-        for (org.apache.maven.model.ReportPlugin r : reportPlugins) {
+        for (org.apache.maven.api.model.ReportPlugin r : reportPlugins) {
             ReportPlugin p = new ReportPlugin();
             p.setGroupId(r.getGroupId());
             p.setArtifactId(r.getArtifactId());
             p.setVersion(r.getVersion());
             if (r.getConfiguration() != null) {
-                p.setConfiguration(new XmlPlexusConfiguration((Xpp3Dom) r.getConfiguration()));
+                p.setConfiguration(new XmlPlexusConfiguration(toXpp3Dom(r.getConfiguration())));
             }
 
             List<ReportSet> prs = new ArrayList<>();
-            for (org.apache.maven.model.ReportSet rs : r.getReportSets()) {
+            for (org.apache.maven.api.model.ReportSet rs : r.getReportSets()) {
                 ReportSet ps = new ReportSet();
                 ps.setId(rs.getId());
                 ps.setReports(new ArrayList<>(rs.getReports()));
                 if (rs.getConfiguration() != null) {
-                    ps.setConfiguration(new XmlPlexusConfiguration((Xpp3Dom) rs.getConfiguration()));
+                    ps.setConfiguration(new XmlPlexusConfiguration(toXpp3Dom(rs.getConfiguration())));
                 }
                 prs.add(ps);
             }
@@ -107,5 +108,13 @@ public class MavenReportExecutorRequest {
 
             this.reportPlugins[i++] = p;
         }
+    }
+
+    private static Xpp3Dom toXpp3Dom(XmlNode node) {
+        Xpp3Dom dom = new Xpp3Dom(node.name());
+        dom.setValue(node.value());
+        node.attributes().forEach(dom::setAttribute);
+        node.children().forEach(child -> dom.addChild(toXpp3Dom(child)));
+        return dom;
     }
 }

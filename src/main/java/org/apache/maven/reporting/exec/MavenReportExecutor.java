@@ -20,7 +20,7 @@ package org.apache.maven.reporting.exec;
 
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.plugin.MojoException;
 
 /**
  * This component will prepare {@link org.apache.maven.reporting.MavenReport}s for later generation. If a
@@ -39,8 +39,8 @@ public interface MavenReportExecutor {
      *
      * @param mavenReportExecutorRequest the request
      * @return a list or prepared Maven report executions
-     * @throws MojoExecutionException on report execution issue
+     * @throws MojoException on report execution issue
      */
     List<MavenReportExecution> buildMavenReports(MavenReportExecutorRequest mavenReportExecutorRequest)
-            throws MojoExecutionException;
+            throws MojoException;
 }

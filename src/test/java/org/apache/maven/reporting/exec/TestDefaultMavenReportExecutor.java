@@ -28,24 +28,24 @@ import java.util.List;
 
 import org.apache.maven.DefaultMaven;
 import org.apache.maven.Maven;
-import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.bridge.MavenRepositorySystem;
 import org.apache.maven.cli.MavenCli;
-import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.DefaultMavenExecutionResult;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequestPopulator;
 import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.internal.impl.DefaultProject;
+import org.apache.maven.internal.impl.DefaultSessionFactory;
+import org.apache.maven.internal.impl.InternalMavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
@@ -56,6 +56,8 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.testing.PlexusTest;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.DefaultSessionData;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -143,7 +145,8 @@ public class TestDefaultMavenReportExecutor {
 
         assertNotNull(mavenReportExecutions);
         assertEquals(1, mavenReportExecutions.size());
-        List<Dependency> dependencies = mavenReportExecutions.get(0).getPlugin().getDependencies();
+        List<org.apache.maven.api.model.Dependency> dependencies =
+                mavenReportExecutions.get(0).getPlugin().getDependencies();
         assertEquals(1, dependencies.size());
         assertEquals("commons-lang", dependencies.get(0).getGroupId());
         assertEquals("2.6", dependencies.get(0).getVersion());
@@ -158,12 +161,14 @@ public class TestDefaultMavenReportExecutor {
         try {
             MavenReportExecutorRequest mavenReportExecutorRequest = new MavenReportExecutorRequest();
 
-            mavenReportExecutorRequest.setProject(mavenProject);
-
             MavenSession mavenSession = getMavenSession(getLocalRepo(), mavenProject);
             mavenSession.setCurrentProject(mavenProject);
             mavenSession.setProjects(Arrays.asList(mavenProject));
-            mavenReportExecutorRequest.setMavenSession(mavenSession);
+            mavenSession.setSession(
+                    plexusContainer.lookup(DefaultSessionFactory.class).newSession(mavenSession));
+            InternalMavenSession session = InternalMavenSession.from(mavenSession.getSession());
+            mavenReportExecutorRequest.setSession(session);
+            mavenReportExecutorRequest.setProject(new DefaultProject(session, mavenProject));
 
             ReportPlugin reportPlugin = new ReportPlugin();
             reportPlugin.setGroupId("org.apache.maven.plugins");
@@ -221,7 +226,10 @@ public class TestDefaultMavenReportExecutor {
 
         MavenExecutionResult result = new DefaultMavenExecutionResult();
 
-        RepositorySystemSession repositorySystemSession = buildRepositorySystemSession(request);
+        // DefaultMaven already associated a throw-away session with the repository session: start with fresh data
+        DefaultRepositorySystemSession repositorySystemSession =
+                new DefaultRepositorySystemSession(buildRepositorySystemSession(request));
+        repositorySystemSession.setData(new DefaultSessionData());
 
         return new MavenSession(plexusContainer, repositorySystemSession, request, result) {
             @Override
@@ -269,9 +277,10 @@ public class TestDefaultMavenReportExecutor {
 
         SettingsBuildingRequest settingsBuildingRequest = new DefaultSettingsBuildingRequest();
 
-        settingsBuildingRequest.setGlobalSettingsFile(SettingsXmlConfigurationProcessor.DEFAULT_GLOBAL_SETTINGS_FILE);
+        settingsBuildingRequest.setGlobalSettingsFile(
+                new File(System.getProperty("maven.home", "."), "conf/settings.xml"));
 
-        settingsBuildingRequest.setUserSettingsFile(SettingsXmlConfigurationProcessor.DEFAULT_USER_SETTINGS_FILE);
+        settingsBuildingRequest.setUserSettingsFile(new File(MavenCli.USER_MAVEN_CONFIGURATION_HOME, "settings.xml"));
 
         settingsBuildingRequest.getSystemProperties().putAll(System.getProperties());
 
@@ -282,19 +291,28 @@ public class TestDefaultMavenReportExecutor {
     }
 
     protected MavenProject getMavenProject() {
-        MavenProjectStub mavenProjectStub = new MavenProjectStub() {
+        org.apache.maven.model.Model model = new org.apache.maven.model.Model();
+        model.setGroupId("test");
+        model.setArtifactId("foo");
+        model.setVersion("1.0-SNAPSHOT");
+        MavenProject mavenProjectStub = new MavenProject(model) {
             @Override
             public List<RemoteRepository> getRemotePluginRepositories() {
-                if (super.getRemotePluginRepositories() == null) {
-                    return RepositoryUtils.toRepos(request.getRemoteRepositories());
+                if (super.getRemotePluginRepositories() == null
+                        || super.getRemotePluginRepositories().isEmpty()) {
+                    // Maven 4 no longer adds Central through the request defaults (it comes from the super POM)
+                    return Collections.singletonList(
+                            new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2")
+                                    .build());
                 }
                 return super.getRemotePluginRepositories();
             }
 
             @Override
             public List<ArtifactRepository> getRemoteArtifactRepositories() {
-                if (super.getRemotePluginRepositories() == null) {
-                    return request.getRemoteRepositories();
+                if (super.getRemotePluginRepositories() == null
+                        || super.getRemotePluginRepositories().isEmpty()) {
+                    return Collections.emptyList();
                 }
                 return super.getRemoteArtifactRepositories();
             }
