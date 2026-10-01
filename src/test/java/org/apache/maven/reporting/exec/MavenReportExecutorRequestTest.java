@@ -18,8 +18,8 @@
  */
 package org.apache.maven.reporting.exec;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,21 +29,24 @@ class MavenReportExecutorRequestTest {
 
     @Test
     void setReportPluginsCopiesReportSetReports() {
-        org.apache.maven.model.ReportSet modelReportSet = new org.apache.maven.model.ReportSet();
-        modelReportSet.setId("default");
-        modelReportSet.setReports(new ArrayList<>(Arrays.asList("index", "summary")));
+        org.apache.maven.api.model.ReportSet modelReportSet = org.apache.maven.api.model.ReportSet.newBuilder()
+                .id("default")
+                .reports(Arrays.asList("index", "summary"))
+                .build();
 
-        org.apache.maven.model.ReportPlugin modelPlugin = new org.apache.maven.model.ReportPlugin();
-        modelPlugin.setGroupId("org.apache.maven.plugins");
-        modelPlugin.setArtifactId("maven-project-info-reports-plugin");
-        modelPlugin.addReportSet(modelReportSet);
+        org.apache.maven.api.model.ReportPlugin modelPlugin = org.apache.maven.api.model.ReportPlugin.newBuilder()
+                .groupId("org.apache.maven.plugins")
+                .artifactId("maven-project-info-reports-plugin")
+                .reportSets(Collections.singletonList(modelReportSet))
+                .build();
 
         MavenReportExecutorRequest request = new MavenReportExecutorRequest();
-        request.setReportPlugins(new org.apache.maven.model.ReportPlugin[] {modelPlugin});
-
-        modelReportSet.getReports().add("dependencies");
+        request.setReportPlugins(new org.apache.maven.api.model.ReportPlugin[] {modelPlugin});
 
         ReportSet copied = request.getReportPlugins()[0].getReportSets().get(0);
-        assertEquals(Arrays.asList("index", "summary"), copied.getReports());
+        copied.getReports().add("dependencies");
+
+        assertEquals(Arrays.asList("index", "summary"), modelReportSet.getReports());
+        assertEquals(Arrays.asList("index", "summary", "dependencies"), copied.getReports());
     }
 }
