@@ -95,9 +95,9 @@ public class TestDefaultMavenReportExecutor {
         assertEquals(2, mavenReportExecutions.size());
         assertEquals(
                 "testapidocs/index",
-                mavenReportExecutions.get(0).getMavenReport().getOutputName());
+                mavenReportExecutions.get(0).getMavenReport().getOutputPath());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(1).getMavenReport().getOutputPath());
     }
 
     @Test
@@ -114,12 +114,12 @@ public class TestDefaultMavenReportExecutor {
         assertNotNull(mavenReportExecutions);
         assertEquals(3, mavenReportExecutions.size());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(0).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(0).getMavenReport().getOutputPath());
         assertEquals(
                 "testapidocs/index",
-                mavenReportExecutions.get(1).getMavenReport().getOutputName());
+                mavenReportExecutions.get(1).getMavenReport().getOutputPath());
         assertEquals(
-                "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputName());
+                "apidocs/index", mavenReportExecutions.get(2).getMavenReport().getOutputPath());
     }
 
     @Test
