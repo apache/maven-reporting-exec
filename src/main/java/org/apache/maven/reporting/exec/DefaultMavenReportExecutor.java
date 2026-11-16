@@ -222,9 +222,9 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             }
             LOGGER.info(
                     "{} {} report{} for {}:{}: {}",
-                    (hasUserDefinedReports ? "Configured" : "Detected"),
+                    hasUserDefinedReports ? "Configured" : "Detected",
                     reports.size(),
-                    (reports.size() > 1 ? "s" : ""),
+                    reports.size() > 1 ? "s" : "",
                     plugin.getArtifactId(),
                     plugin.getVersion(),
                     buff);
@@ -480,10 +480,10 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             PlexusConfiguration pluginConf,
             PlexusConfiguration reportSetConf,
             Set<String> parameters) {
-        Xpp3Dom mojoConfig = (mojoConf != null) ? convert(mojoConf) : new Xpp3Dom("configuration");
+        Xpp3Dom mojoConfig = mojoConf != null ? convert(mojoConf) : new Xpp3Dom("configuration");
 
         if (pluginMgmtConfig != null || pluginConf != null || reportSetConf != null) {
-            Xpp3Dom pluginConfig = (pluginConf == null) ? new Xpp3Dom("fake") : convert(pluginConf);
+            Xpp3Dom pluginConfig = pluginConf == null ? new Xpp3Dom("fake") : convert(pluginConf);
 
             // merge pluginConf into reportSetConf
             Xpp3Dom mergedConfig = Xpp3DomUtils.mergeXpp3Dom(convert(reportSetConf), pluginConfig);
