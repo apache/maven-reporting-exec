@@ -51,7 +51,6 @@ import org.apache.maven.plugin.version.PluginVersionResult;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.MavenReport;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomUtils;
 import org.slf4j.Logger;
@@ -355,10 +354,12 @@ public class DefaultMavenReportExecutor implements MavenReportExecutor {
             String reportDescription = pluginDescriptor.getArtifactId() + ":" + report.getGoal() + " report";
 
             String execution;
-            if (StringUtils.isNotEmpty(mojoDescriptor.getExecutePhase())) {
+            if (mojoDescriptor.getExecutePhase() != null
+                    && !mojoDescriptor.getExecutePhase().isEmpty()) {
                 // forked phase
                 execution = "'"
-                        + (StringUtils.isEmpty(mojoDescriptor.getExecuteLifecycle())
+                        + (mojoDescriptor.getExecuteLifecycle() == null
+                                        || mojoDescriptor.getExecuteLifecycle().isEmpty()
                                 ? ""
                                 : ('[' + mojoDescriptor.getExecuteLifecycle() + ']'))
                         + mojoDescriptor.getExecutePhase() + "' forked phase execution";
