@@ -78,7 +78,7 @@ public class TestDefaultMavenReportExecutor {
     MavenExecutionRequest request = null;
 
     @Test
-    void simpleLookup() throws Exception {
+    void simpleLookup() throws ComponentLookupException {
         assertNotNull(plexusContainer.lookup(MavenReportExecutor.class));
     }
 
