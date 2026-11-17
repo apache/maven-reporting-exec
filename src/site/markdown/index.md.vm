@@ -19,55 +19,159 @@ under the License.
 
 # ${project.name}
 
-Classes to prepare report plugins execution with Maven 3, through [MavenReportExecutor](./apidocs/org/apache/maven/reporting/exec/MavenReportExecutor.html) ([implementation](./apidocs/org/apache/maven/reporting/exec/DefaultMavenReportExecutor.html)).
+Maven Reporting Executor turns the report plugins listed in a POM's `<reporting>` section into configured
+[`MavenReport`](https://maven.apache.org/shared/maven-reporting-api/apidocs/org/apache/maven/reporting/MavenReport.html)
+instances, ready to render. Maven core does not prepare reports itself, so the
+[Maven Site Plugin](https://maven.apache.org/plugins/maven-site-plugin/) calls this library during `mvn site`, and
+any plugin that renders reports on its own can do the same.
 
-Contrary to Maven 2.x:
+For each report plugin, the executor:
 
-1. report `<version>` explicit definition is optional:  
-    if no version is specified for a report plugin, version is determined by
-    1. searching for the plugin in the `build/plugins` section of the pom,
-    1. searching for the plugin in the `build/pluginManagement` section of the pom,
-    1. asking [PluginVersionResolver](/ref/current/maven-core/apidocs/org/apache/maven/plugin/version/PluginVersionResolver.html) to get a fallback version and display a warning as it's not a recommended use,
-1. plugin configuration from `build/pluginManagement` is injected into `reporting/plugins` (since Maven Reporting Executor 1.2, which is [used by Maven Site Plugin 3.4](/plugins/maven-site-plugin/history.html)).
+1. resolves the plugin version,
+2. selects the report goals to run,
+3. merges the report configuration with the plugin's `build/pluginManagement` configuration,
+4. loads the plugin in its own class realm and configures each report goal as a mojo,
+5. runs the forked lifecycle a report asks for, such as `generate-sources` for `jxr:jxr`.
+
+This page covers what a site user sees, how to call the executor from your own plugin, and what changes in 2.1.0.
+
+${esc.h}${esc.h} Requirements
+
+Version ${project.version} needs Java ${javaVersion} or later. It is built against the Maven ${mavenVersion} core API
+and no longer needs `maven-compat`. Version 2.0.1 is the last release built against Maven 3.6.3.
+
+${esc.h}${esc.h} How report plugins are configured during `mvn site`
+
+${esc.h}${esc.h}${esc.h} Plugin version
+
+When a report plugin in `<reporting>` has no `<version>`, the executor takes the first version it finds in:
+
+1. the `build/plugins` section of the POM,
+2. the `build/pluginManagement` section of the POM,
+3. the plugin repositories, through Maven's `PluginVersionResolver`. This last step logs a warning, because the
+   build is no longer reproducible:
+
+```text
+[WARNING] Report plugin org.apache.maven.plugins:maven-jxr-plugin has an empty version.
+[WARNING]
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING]
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[INFO] Configuring report plugin maven-jxr-plugin:3.6.0
+```
+
+Declare the version in `<reporting>` or in `build/pluginManagement` to avoid it.
+
+${esc.h}${esc.h}${esc.h} Report goals
+
+If the plugin lists `<reports>` in a `<reportSet>`, only those goals run, and the log says `Configured`. Without a
+report list, every goal of the plugin that implements `MavenReport` runs, and the log says `Detected`:
+
+```text
+[INFO] Configuring report plugin maven-project-info-reports-plugin:3.9.0
+[INFO] Configured 2 reports for maven-project-info-reports-plugin:3.9.0: index, summary
+[INFO] Configuring report plugin maven-jxr-plugin:3.6.0
+[INFO] Detected 4 reports for maven-jxr-plugin:3.6.0: jxr, jxr-no-fork, test-jxr, test-jxr-no-fork
+```
+
+Detected goals that aggregate reports run only in the execution root of a multi-module build with `pom` packaging.
+A goal listed explicitly always runs, and a listed goal that is not a report logs a warning and is skipped.
+
+${esc.h}${esc.h}${esc.h} Report configuration
+
+The executor merges configuration in this order, with the first source winning:
+
+1. the `<reportSet>` `<configuration>`,
+2. the report plugin's `<configuration>` in `<reporting>`,
+3. the plugin's `<configuration>` in `build/pluginManagement`,
+4. the mojo's default values.
+
+Parameters that the report goal does not declare are dropped. The `<dependencies>` of the same plugin in
+`build/plugins`, or else in `build/pluginManagement`, are added to the report plugin's class path.
+
+${esc.h}${esc.h} Run report plugins from your own plugin
+
+Inject [`MavenReportExecutor`](./apidocs/org/apache/maven/reporting/exec/MavenReportExecutor.html), fill a
+[`MavenReportExecutorRequest`](./apidocs/org/apache/maven/reporting/exec/MavenReportExecutorRequest.html), and
+render each returned [`MavenReportExecution`](./apidocs/org/apache/maven/reporting/exec/MavenReportExecution.html)
+with the context class loader set to the execution's class loader. This is what the Maven Site Plugin does:
+
+```java
+@Parameter(defaultValue = "${esc.d}{session}", readonly = true, required = true)
+private MavenSession session;
+
+@Parameter(defaultValue = "${esc.d}{project}", readonly = true, required = true)
+private MavenProject project;
+
+@Parameter(defaultValue = "${esc.d}{project.reporting.plugins}", readonly = true)
+private org.apache.maven.model.ReportPlugin[] reportingPlugins;
+
+@Parameter(defaultValue = "${esc.d}{mojoExecution}", readonly = true, required = true)
+private MojoExecution mojoExecution;
+
+private final MavenReportExecutor mavenReportExecutor; // injected through the mojo's @Inject constructor
+
+List<MavenReportExecution> prepareReports() throws MojoExecutionException {
+    MavenReportExecutorRequest request = new MavenReportExecutorRequest();
+    request.setMavenSession(session);
+    request.setExecutionId(mojoExecution.getExecutionId());
+    request.setProject(project);
+    request.setReportPlugins(reportingPlugins);
+    return mavenReportExecutor.buildMavenReports(request);
+}
+
+void render(MavenReportExecution execution, Sink sink, SinkFactory sinkFactory, Locale locale)
+        throws MavenReportException {
+    if (!execution.canGenerateReport()) {
+        return;
+    }
+    ClassLoader original = Thread.currentThread().getContextClassLoader();
+    try {
+        Thread.currentThread().setContextClassLoader(execution.getClassLoader());
+        execution.getMavenReport().generate(sink, sinkFactory, locale);
+    } finally {
+        Thread.currentThread().setContextClassLoader(original);
+    }
+}
+```
+
+[`canGenerateReport()`](./apidocs/org/apache/maven/reporting/exec/MavenReportExecution.html) already switches the
+class loader for you. `generate(Sink, SinkFactory, Locale)` is the Maven Reporting API 4.1.0 entry point; it also
+reaches reports that implement only `generate(Sink, Locale)`.
+
+${esc.h}${esc.h}${esc.h} Classes shared with the calling plugin
+
+Each report plugin gets its own class realm, whose parent is the calling plugin's class loader. These packages always
+come from the calling plugin, so that the report and the caller agree on the `MavenReport` and `Sink` types:
+
+- `org.apache.maven.reporting`
+- `org.apache.maven.doxia.siterenderer`
+- `org.apache.maven.doxia.sink`
+- `org.apache.maven.doxia.util`
+
+The artifacts `maven-reporting-api`, `doxia-sink-api` and `doxia-site-renderer` are dropped from the report plugin's
+own dependencies for the same reason. During `mvn site`, a report therefore runs with the Maven Site Plugin's
+Reporting API and Doxia versions, not the ones in its own POM; see
+[`DefaultMavenReportExecutor`](https://github.com/apache/maven-reporting-exec/blob/${project.scm.tag}/src/main/java/org/apache/maven/reporting/exec/DefaultMavenReportExecutor.java) for the
+exact lists.
+
+${esc.h}${esc.h} Upgrading to 2.1.0
+
+- `MavenReportExecutorRequest.getLocalRepository()` and `setLocalRepository(ArtifactRepository)`, deprecated since
+  2.0.0-M10, are removed. Nothing read the value; delete the call.
+- The library no longer depends on `maven-compat` and is built against Maven ${mavenVersion} instead of 3.6.3.
+- It depends on Maven Reporting API 4.1.0 and Doxia Sink API 2.2.0.
 
 Notice on now obsolete reportPlugin format
 ------------------------------------------
 
-Since 1.4 (used by Maven Site Plugin 3.7), the request can (and should) be populated from [pom's `<reporting.plugins>` section](/ref/current/maven-model/maven.html#class_reporting), injected in Mojo parameter as `${esc.d}{project.reporting.plugins}` default value:
+Before 1.4, the request was filled from a `<reportPlugins>` parameter in the configuration of
+`maven-site-plugin` or another plugin that renders reports. That format has been abandoned: it did not support configuration inheritance
+([MSITE-484](https://issues.apache.org/jira/browse/MSITE-484)), and Maven core converted `<reporting>` into it only
+for the Maven Site Plugin, not for other plugins that render reports. See the
+[Maven Site Plugin 3.8.2 documentation](https://maven.apache.org/plugins-archives/maven-site-plugin-3.8.2/maven-3.html#New_Configuration_.28Maven_3_only.2C_no_reports_configuration_inheritance.29)
+for the history.
 
-```java
-    @Parameter( defaultValue = "${esc.d}{project.reporting.plugins}", readonly = true )
-    private org.apache.maven.model.ReportPlugin[] reportingPlugins;
-```
-
-This section is kept to explain what happened in previous releases of the component, but this approach has been abandoned so far after discovering major limitations: see [Maven Site Plugin 3.9.0 documentation](/plugins-archives/maven-site-plugin-3.9.0/maven-3.html#New_Configuration_Maven_3_only_no_reports_configuration_inheritance) for more details.
-
-Report plugins can be configured in `<configuration>` element of `maven-site-plugin` or any other report building plugin with following XML model corresponding to plugin's `List<`[`ReportPlugin`](./apidocs/org/apache/maven/reporting/exec/ReportPlugin.html)`>` parameter:
-
-```xml
-<reportPlugins>
-  <reportPlugin>
-    <groupId/>
-    <artifactId/>
-    <version/>
-    <configuration/>
-    <reports/>
-    <reportSets>
-      <reportSet>
-        <id/>
-        <configuration/>
-        <reports/>
-      </reportSet>
-    </reportSets>
-  </reportPlugin>
-</reportPlugins>
-```
-
-Notice this is the model from plugins in [`<reporting>` section of POM](/ref/current/maven-model/maven.html#class_reporting):
-
-- without `<inherited>` element: reporting plugins configuration inheritance is not supported at this level (see [MSITE-484](https://issues.apache.org/jira/browse/MSITE-484)),
-- with additional `<reports>` list outside `<reportSet>` that simplifies reports configuration in usual cases.
-
-Maven 3 core makes an automatic transformation of `<reporting>` POM section (which supports configuration inheritance) to `maven-site-plugin`'s `reportPlugins` configuration through the [ReportingConverter](/ref/current/maven-model-builder/apidocs/org/apache/maven/model/plugin/ReportingConverter.html) component.
-
-But Maven 3 does not do the same job for any other plugin wanting to use reports, like `maven-pdf-plugin` for example: this is one of the key limitations that made Maven team drop this approach.
+Since 1.4, fill the request from the POM's `<reporting>` section instead, with
+`setReportPlugins(org.apache.maven.model.ReportPlugin[])` and the `${esc.d}{project.reporting.plugins}` expression
+shown above.
