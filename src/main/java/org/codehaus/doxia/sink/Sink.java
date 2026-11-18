@@ -20,6 +20,10 @@ package org.codehaus.doxia.sink;
 
 /**
  * Generic document processing interface.
+ * <p>
+ * Do not remove: report plugins that still declare the Maven 2 era method
+ * {@code generate(org.codehaus.doxia.sink.Sink, Locale)}, such as jacoco-maven-plugin 0.8.16, fail to load during
+ * {@code mvn site} without this type ("A required class was missing ... org/codehaus/doxia/sink/Sink").
  *
  * @deprecated use {@link org.apache.maven.doxia.sink.Sink} instead (since 1.0-alpha-6).
  */
