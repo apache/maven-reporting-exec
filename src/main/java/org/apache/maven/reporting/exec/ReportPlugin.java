@@ -88,7 +88,7 @@ class ReportPlugin {
     }
 
     public List<String> getReports() {
-        return reports == null ? Collections.<String>emptyList() : reports;
+        return reports == null ? Collections.emptyList() : reports;
     }
 
     public void setReports(List<String> reports) {

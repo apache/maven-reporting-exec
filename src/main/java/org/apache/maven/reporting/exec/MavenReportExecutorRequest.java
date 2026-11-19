@@ -81,9 +81,7 @@ public class MavenReportExecutorRequest {
      * @since 1.4
      */
     public void setReportPlugins(org.apache.maven.model.ReportPlugin[] reportPlugins) {
-        setReportPlugins(new ReportPlugin[reportPlugins.length]);
-
-        int i = 0;
+        List<ReportPlugin> converted = new ArrayList<>();
         for (org.apache.maven.model.ReportPlugin r : reportPlugins) {
             ReportPlugin p = new ReportPlugin();
             p.setGroupId(r.getGroupId());
@@ -105,7 +103,8 @@ public class MavenReportExecutorRequest {
             }
             p.setReportSets(prs);
 
-            this.reportPlugins[i++] = p;
+            converted.add(p);
         }
+        setReportPlugins(converted.toArray(new ReportPlugin[0]));
     }
 }
