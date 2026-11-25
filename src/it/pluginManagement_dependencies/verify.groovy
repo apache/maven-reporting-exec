@@ -18,9 +18,9 @@
  * under the License.
  */
 
-content = new File( basedir, 'build.log' ).text;
+content = new File(basedir, 'build.log').text
 
-assert !content.contains( 'com.puppycrawl.tools:checkstyle:jar:5.6' );
-assert content.contains( 'com.puppycrawl.tools:checkstyle:jar:9.3' );
+assert !content.contains('com.puppycrawl.tools:checkstyle:jar:5.6')
+assert content.contains('com.puppycrawl.tools:checkstyle:jar:9.3')
 
-return true;
+return true

@@ -17,19 +17,19 @@
  * under the License.
  */
 
- File f = new File( basedir, 'target/site/configuration.html' );
-assert f.exists();
-content = f.text;
+File f = new File(basedir, 'target/site/configuration.html')
+assert f.exists()
+content = f.text
 
 // parameter merged from pluginManagement
-assert content.contains( 'pluginManagement = pluginManagement' );
+assert content.contains('pluginManagement = pluginManagement')
 // parameter from build.plugin is not merged
-assert content.contains( 'buildPlugin = null' );
+assert content.contains('buildPlugin = null')
 // parameter from build.plugin is not merged but pluginManagement
-assert content.contains( 'buildAndManagement = pluginManagement' );
+assert content.contains('buildAndManagement = pluginManagement')
 // parameter from reporting.plugin wins over pluginManagement
-assert content.contains( 'reportingPlugin = reporting.plugin' );
+assert content.contains('reportingPlugin = reporting.plugin')
 // parameter from reporting.plugin.reportSet wins over reporting.plugin and pluginManagement
-assert content.contains( 'reportingPluginReportSet = reporting.plugin.reportSet' );
+assert content.contains('reportingPluginReportSet = reporting.plugin.reportSet')
 
-return true;
+return true
