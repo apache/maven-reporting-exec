@@ -18,12 +18,12 @@
  * under the License.
  */
 
-File report = new File( basedir, "target/site/changes.html" );
+File report = new File(basedir, "target/site/changes.html")
 assert report.exists() && !report.isDirectory() : "report file is missing or a directory."
-String reportContent = report.getText( 'UTF-8' );
+String reportContent = report.getText( 'UTF-8' )
 
-int indexOf = reportContent.indexOf( "Changes" );
+int indexOf = reportContent.indexOf( "Changes" )
 assert indexOf >= 0 : "changes.html doesn't contains Changes Report title"
 
-indexOf = reportContent.indexOf( "href=\"http://localhost/MCHANGES-88\"" );
+indexOf = reportContent.indexOf( "href=\"http://localhost/MCHANGES-88\"" )
 assert indexOf >= 0 : "changes.html doesn't contains jira issue link"
